@@ -1,0 +1,45 @@
+<%= form_with(model: [:admin, crawl_source], local: true, class: "space-y-6") do |f| %>
+  <% if crawl_source.errors.any? %>
+    <div class="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
+      <ul class="list-disc list-inside">
+        <% crawl_source.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, "소스 이름", class: "block text-sm font-bold text-gray-700 mb-2" %>
+    <%= f.text_field :name, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500", placeholder: "예: marathon.or.kr" %>
+  </div>
+
+  <div>
+    <%= f.label :base_url, "기본 URL", class: "block text-sm font-bold text-gray-700 mb-2" %>
+    <%= f.url_field :base_url, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500", placeholder: "https://marathon.or.kr" %>
+  </div>
+
+  <div>
+    <%= f.label :crawler_class, "크롤러 클래스명", class: "block text-sm font-bold text-gray-700 mb-2" %>
+    <%= f.text_field :crawler_class, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500", placeholder: "Crawlers::SampleCrawler" %>
+    <p class="text-xs text-gray-400 mt-1">app/services/crawlers/ 디렉토리에 구현된 클래스명을 입력하세요.</p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div>
+      <%= f.label :crawl_interval_hours, "수집 주기 (시간)", class: "block text-sm font-bold text-gray-700 mb-2" %>
+      <%= f.number_field :crawl_interval_hours, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500", min: 1 %>
+    </div>
+    <div class="flex items-end">
+      <label class="flex items-center gap-2 px-4 py-3">
+        <%= f.check_box :enabled, class: "rounded text-indigo-600" %>
+        <span class="text-sm font-bold text-gray-700">활성화</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+    <%= link_to "취소", admin_crawl_sources_path, class: "text-sm text-gray-400 hover:text-gray-600 font-bold" %>
+    <%= f.submit crawl_source.persisted? ? "저장" : "등록", class: "px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl transition-colors cursor-pointer" %>
+  </div>
+<% end %>

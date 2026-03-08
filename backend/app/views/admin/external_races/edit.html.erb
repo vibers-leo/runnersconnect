@@ -1,0 +1,53 @@
+<div class="max-w-3xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "외부 대회 수정",
+      description: @race.title %>
+
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+    <%= form_with(model: @race, url: admin_external_race_path(@race), method: :patch, local: true, class: "space-y-6") do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <%= f.label :title, "대회명", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_field :title, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :location, "장소", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_field :location, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :race_date, "대회 날짜", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.date_field :race_date, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :race_end_date, "종료일 (여러 날인 경우)", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.date_field :race_end_date, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :registration_url, "참가 신청 URL", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.url_field :registration_url, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :fee_info, "참가비 정보", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_field :fee_info, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :organizer_name, "주최", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_field :organizer_name, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :status, "상태", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.select :status, options_for_select([["진행 예정", "active"], ["취소", "cancelled"], ["완료", "completed"]], @race.status), {}, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white" %>
+        </div>
+      </div>
+      <div>
+        <%= f.label :description, "설명", class: "block text-sm font-bold text-gray-700 mb-2" %>
+        <%= f.text_area :description, rows: 4, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500" %>
+      </div>
+
+      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <%= link_to "취소", admin_external_races_path, class: "text-sm text-gray-400 hover:text-gray-600 font-bold" %>
+        <%= f.submit "저장", class: "px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl transition-colors cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

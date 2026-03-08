@@ -1,0 +1,150 @@
+<div class="max-w-4xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "커뮤니티 프로필 수정",
+      description: "커뮤니티 정보를 상세하게 작성할수록 더 많은 러너가 찾아옵니다." %>
+
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+    <%= form_with(model: @crew, url: dashboard_community_path, method: :patch, local: true, class: "space-y-8") do |f| %>
+      <% if @crew.errors.any? %>
+        <div class="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
+          <ul class="list-disc list-inside">
+            <% @crew.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%# 기본 정보 %>
+      <fieldset>
+        <legend class="text-lg font-black text-gray-900 mb-4">기본 정보</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :name, "크루 이름", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.text_field :name, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "크루 이름" %>
+          </div>
+          <div>
+            <%= f.label :region, "활동 지역", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.select :region, options_for_select(%w[서울 부산 대구 인천 광주 대전 울산 세종 경기 강원 충북 충남 전북 전남 경북 경남 제주], @crew.region), { include_blank: "지역 선택" }, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-white" %>
+          </div>
+        </div>
+        <div class="mt-4">
+          <%= f.label :short_description, "한 줄 소개 (100자 이내)", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_field :short_description, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "함께 달리는 즐거움을 나누는 크루", maxlength: 100 %>
+        </div>
+        <div class="mt-4">
+          <%= f.label :description, "크루 소개 (상세)", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.text_area :description, rows: 6, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "크루 소개, 활동 내용, 가입 방법 등을 자유롭게 작성해주세요." %>
+        </div>
+      </fieldset>
+
+      <%# 활동 정보 %>
+      <fieldset>
+        <legend class="text-lg font-black text-gray-900 mb-4">활동 정보</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :activity_schedule, "활동 일정", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.text_field :activity_schedule, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "매주 화/목 저녁 7시" %>
+          </div>
+          <div>
+            <%= f.label :activity_location, "활동 장소", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.text_field :activity_location, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "한강 여의도공원" %>
+          </div>
+          <div>
+            <%= f.label :founded_year, "설립 연도", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.number_field :founded_year, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "2024", min: 1990, max: Date.current.year %>
+          </div>
+          <div>
+            <%= f.label :member_count_estimate, "예상 멤버 수", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.number_field :member_count_estimate, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "30", min: 1 %>
+          </div>
+        </div>
+        <div class="mt-4">
+          <%= f.label :website_url, "웹사이트 URL", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.url_field :website_url, class: "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent", placeholder: "https://..." %>
+        </div>
+      </fieldset>
+
+      <%# 이미지 %>
+      <fieldset>
+        <legend class="text-lg font-black text-gray-900 mb-4">이미지</legend>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <%= f.label :logo, "로고", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.file_field :logo, accept: "image/*", class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" %>
+            <% if @crew.logo.attached? %>
+              <div class="mt-2">
+                <%= image_tag @crew.logo, class: "w-16 h-16 rounded-xl object-cover" %>
+              </div>
+            <% end %>
+          </div>
+          <div>
+            <%= f.label :cover_image, "커버 이미지", class: "block text-sm font-bold text-gray-700 mb-2" %>
+            <%= f.file_field :cover_image, accept: "image/*", class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" %>
+            <% if @crew.cover_image.attached? %>
+              <div class="mt-2">
+                <%= image_tag @crew.cover_image, class: "w-full h-20 rounded-xl object-cover" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="mt-4">
+          <%= f.label :activity_photos, "활동 사진 (여러 장 선택 가능)", class: "block text-sm font-bold text-gray-700 mb-2" %>
+          <%= f.file_field :activity_photos, multiple: true, accept: "image/*", class: "w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" %>
+          <% if @crew.activity_photos.any? %>
+            <div class="mt-3 grid grid-cols-4 gap-3">
+              <% @crew.activity_photos.each do |photo| %>
+                <div class="relative group">
+                  <%= image_tag photo, class: "w-full aspect-square rounded-xl object-cover" %>
+                  <%= link_to remove_photo_dashboard_community_path(photo_id: photo.id), method: :delete,
+                      class: "absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity",
+                      data: { turbo_method: :delete, turbo_confirm: "이 사진을 삭제하시겠습니까?" } do %>
+                    ×
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <%# 연락처 %>
+      <fieldset>
+        <legend class="text-lg font-black text-gray-900 mb-4">연락처</legend>
+        <div id="contact-points" class="space-y-4">
+          <%= f.fields_for :crew_contact_points do |cp_form| %>
+            <div class="flex flex-col md:flex-row gap-3 p-4 bg-gray-50 rounded-xl">
+              <div class="flex-shrink-0 w-full md:w-40">
+                <%= cp_form.select :platform, options_for_select(CrewContactPoint.platforms.keys.map { |k| [CrewContactPoint.new(platform: k).platform_display_name, k] }, cp_form.object.platform), {}, class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white" %>
+              </div>
+              <div class="flex-1">
+                <%= cp_form.text_field :label, placeholder: "표시 이름 (예: 인스타그램)", class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" %>
+              </div>
+              <div class="flex-1">
+                <%= cp_form.text_field :url, placeholder: "URL (https://...)", class: "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" %>
+              </div>
+              <div class="flex items-center gap-2">
+                <%= cp_form.check_box :primary, class: "rounded" %>
+                <label class="text-xs text-gray-500">대표</label>
+              </div>
+              <% if cp_form.object.persisted? %>
+                <div class="flex items-center">
+                  <%= cp_form.check_box :_destroy, class: "rounded text-red-500" %>
+                  <label class="text-xs text-red-500 ml-1">삭제</label>
+                </div>
+              <% end %>
+              <%= cp_form.hidden_field :id %>
+            </div>
+          <% end %>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">연락처를 추가하려면 저장 후 다시 수정 페이지를 방문해주세요.</p>
+      </fieldset>
+
+      <%# 제출 %>
+      <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+        <%= link_to "취소", dashboard_community_path, class: "text-sm text-gray-400 hover:text-gray-600 font-bold" %>
+        <%= f.submit "저장하기", class: "px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl transition-colors cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

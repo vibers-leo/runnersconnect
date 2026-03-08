@@ -1,0 +1,76 @@
+<%= link_to community_path(crew.slug), class: "group block" do %>
+  <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all h-full flex flex-col <%= 'ring-2 ring-indigo-500' if local_assigns[:featured] %>">
+    <%# 커버 이미지 %>
+    <div class="aspect-[16/10] relative overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600">
+      <% if crew.cover_image.attached? %>
+        <%= image_tag crew.cover_image, class: "w-full h-full object-cover" %>
+      <% end %>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+
+      <%# 로고 %>
+      <% if crew.logo.attached? %>
+        <div class="absolute top-4 left-4">
+          <%= image_tag crew.logo, class: "w-12 h-12 rounded-xl object-cover border-2 border-white shadow-lg" %>
+        </div>
+      <% end %>
+
+      <%# 지역 뱃지 %>
+      <% if crew.region.present? %>
+        <div class="absolute top-4 right-4">
+          <span class="bg-white/90 text-gray-900 font-bold px-3 py-1 rounded-lg text-xs shadow">
+            <%= crew.region %>
+          </span>
+        </div>
+      <% end %>
+
+      <%# 추천 뱃지 %>
+      <% if crew.featured? %>
+        <div class="absolute bottom-4 right-4">
+          <span class="bg-yellow-400 text-yellow-900 font-black px-3 py-1 rounded-lg text-xs shadow uppercase tracking-wider">
+            추천
+          </span>
+        </div>
+      <% end %>
+
+      <div class="absolute bottom-4 left-4">
+        <h3 class="text-xl font-bold text-white mb-1"><%= crew.name %></h3>
+      </div>
+    </div>
+
+    <%# 콘텐츠 %>
+    <div class="p-6 flex-1 flex flex-col">
+      <% if crew.short_description.present? %>
+        <p class="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed"><%= crew.short_description %></p>
+      <% end %>
+
+      <div class="flex items-center gap-4 text-xs text-gray-400 mb-4">
+        <div class="flex items-center">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span class="font-bold text-gray-600"><%= crew.leader.display_name %></span>
+        </div>
+        <% if crew.member_count_estimate.present? && crew.member_count_estimate > 0 %>
+          <span class="font-bold"><%= crew.member_count_estimate %>명</span>
+        <% end %>
+      </div>
+
+      <%# 연락처 뱃지 %>
+      <% if crew.crew_contact_points.any? %>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <% crew.crew_contact_points.first(3).each do |cp| %>
+            <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold">
+              <%= cp.platform_display_name %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="mt-auto pt-4 border-t border-gray-100">
+        <span class="block w-full text-center py-3 bg-gray-100 text-gray-900 font-bold rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all text-sm">
+          자세히 보기
+        </span>
+      </div>
+    </div>
+  </div>
+<% end %>

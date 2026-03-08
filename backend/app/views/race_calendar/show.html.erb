@@ -1,0 +1,79 @@
+<div class="max-w-3xl mx-auto px-6 py-16">
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <%# 헤더 %>
+    <div class="bg-gradient-to-r from-orange-500 to-red-500 p-8 text-white">
+      <span class="px-3 py-1 bg-white/20 text-white text-xs font-black rounded-lg mb-3 inline-block">외부 대회</span>
+      <h1 class="text-3xl font-black mb-2"><%= @race.title %></h1>
+      <p class="text-white/80 text-lg"><%= @race.date_display %></p>
+    </div>
+
+    <div class="p-8 space-y-6">
+      <%# 기본 정보 %>
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% if @race.location.present? %>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <dt class="text-xs text-gray-400 font-bold uppercase mb-1">장소</dt>
+            <dd class="font-bold text-gray-900"><%= @race.location %></dd>
+          </div>
+        <% end %>
+        <% if @race.organizer_name.present? %>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <dt class="text-xs text-gray-400 font-bold uppercase mb-1">주최</dt>
+            <dd class="font-bold text-gray-900"><%= @race.organizer_name %></dd>
+          </div>
+        <% end %>
+        <% if @race.distances.any? %>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <dt class="text-xs text-gray-400 font-bold uppercase mb-1">종목</dt>
+            <dd class="font-bold text-gray-900"><%= @race.distances.join(", ") %></dd>
+          </div>
+        <% end %>
+        <% if @race.fee_info.present? %>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <dt class="text-xs text-gray-400 font-bold uppercase mb-1">참가비</dt>
+            <dd class="font-bold text-gray-900"><%= @race.fee_info %></dd>
+          </div>
+        <% end %>
+        <% if @race.registration_deadline.present? %>
+          <div class="bg-gray-50 rounded-xl p-4">
+            <dt class="text-xs text-gray-400 font-bold uppercase mb-1">접수 마감</dt>
+            <dd class="font-bold text-gray-900"><%= @race.registration_deadline.strftime('%Y.%m.%d') %></dd>
+          </div>
+        <% end %>
+        <div class="bg-gray-50 rounded-xl p-4">
+          <dt class="text-xs text-gray-400 font-bold uppercase mb-1">정보 출처</dt>
+          <dd class="font-bold text-gray-900"><%= @race.source_name %></dd>
+        </div>
+      </dl>
+
+      <%# 설명 %>
+      <% if @race.description.present? %>
+        <div>
+          <h2 class="text-lg font-black text-gray-900 mb-3">대회 설명</h2>
+          <div class="prose max-w-none text-gray-700">
+            <%= simple_format(@race.description) %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# 외부 링크 %>
+      <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
+        <% if @race.registration_url.present? %>
+          <a href="<%= @race.registration_url %>" target="_blank" rel="noopener noreferrer"
+             class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl transition-colors">
+            참가 신청하기
+            <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          </a>
+        <% end %>
+        <a href="<%= @race.source_url %>" target="_blank" rel="noopener noreferrer"
+           class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors">
+          원본 페이지 보기
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= link_to "← 대회 캘린더", race_calendar_path, class: "text-sm text-gray-400 hover:text-gray-600 font-bold" %>
+  </div>
+</div>

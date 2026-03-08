@@ -37,12 +37,24 @@ Rails.application.routes.draw do
         end
       end
 
+      # 커뮤니티 API
+      resources :communities, only: [:index, :show], controller: "communities"
 
+      # 대회 캘린더 API (통합 피드)
+      resources :race_calendar, only: [:index, :show], controller: "race_calendar"
     end
   end
 
   resources :registrations, only: [:index, :show, :new, :create]
   resources :crews, only: [:index, :new, :create, :show]
+
+  # 커뮤니티 디렉토리 (공개)
+  resources :communities, only: [:index, :show], controller: "communities"
+
+  # 대회 캘린더 (외부 대회 포함)
+  get "race-calendar", to: "race_calendar#index", as: :race_calendar
+  get "race-calendar/:id", to: "race_calendar#show", as: :race_calendar_show
+
   resources :races, only: [:index, :show] do
     resources :products, only: [:index]
   end
@@ -61,6 +73,14 @@ Rails.application.routes.draw do
     post :skip, on: :collection
   end
 
+  # 커뮤니티 리더 대시보드
+  namespace :dashboard do
+    resource :community, only: [:show, :edit, :update], controller: "community" do
+      post :submit_for_review
+      delete :remove_photo
+    end
+  end
+
   namespace :admin do
     root to: "dashboard#index"
     resources :dashboard, only: [:index]
@@ -71,6 +91,25 @@ Rails.application.routes.draw do
         post :approve
         post :reject
         post :mark_paid
+      end
+    end
+
+    # 커뮤니티 관리 (어드민)
+    resources :communities, controller: "communities" do
+      member do
+        patch :approve
+        patch :suspend
+        patch :feature
+      end
+    end
+
+    # 외부 대회 관리
+    resources :external_races, only: [:index, :edit, :update, :destroy]
+
+    # 크롤링 소스 관리
+    resources :crawl_sources do
+      member do
+        post :trigger_crawl
       end
     end
   end

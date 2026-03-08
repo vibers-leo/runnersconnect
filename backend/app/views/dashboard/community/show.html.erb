@@ -1,0 +1,99 @@
+<div class="max-w-4xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "커뮤니티 관리",
+      description: "커뮤니티 프로필을 관리하고 홍보하세요." %>
+
+  <%# 상태 배너 %>
+  <div class="mb-8 p-4 rounded-xl <%= @crew.status_badge_color %> border">
+    <div class="flex items-center justify-between">
+      <div>
+        <span class="font-black text-sm">상태: <%= @crew.status_display %></span>
+        <% if @crew.draft? %>
+          <p class="text-xs mt-1">프로필을 완성하고 검토를 요청해주세요.</p>
+        <% elsif @crew.pending_review? %>
+          <p class="text-xs mt-1">관리자 검토 중입니다. 승인되면 커뮤니티 디렉토리에 공개됩니다.</p>
+        <% elsif @crew.published? %>
+          <p class="text-xs mt-1">커뮤니티 디렉토리에 공개되어 있습니다.
+            <%= link_to "보기 →", community_path(@crew.slug), class: "underline font-bold" %>
+          </p>
+        <% end %>
+      </div>
+      <% if @crew.draft? %>
+        <%= link_to "검토 요청하기", submit_for_review_dashboard_community_path, method: :post,
+            class: "px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm transition-colors",
+            data: { turbo_method: :post, turbo_confirm: "검토를 요청하시겠습니까?" } %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 통계 카드 %>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <p class="text-xs text-gray-400 font-black uppercase tracking-widest mb-2">멤버 수</p>
+      <p class="text-3xl font-black text-gray-900"><%= @members_count %></p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <p class="text-xs text-gray-400 font-black uppercase tracking-widest mb-2">조회수</p>
+      <p class="text-3xl font-black text-gray-900"><%= @crew.views_count %></p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <p class="text-xs text-gray-400 font-black uppercase tracking-widest mb-2">연락처</p>
+      <p class="text-3xl font-black text-gray-900"><%= @contact_points.count %></p>
+    </div>
+  </div>
+
+  <%# 프로필 요약 %>
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-black text-gray-900">프로필 정보</h2>
+      <%= link_to "수정하기", edit_dashboard_community_path, class: "px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-lg text-sm transition-colors" %>
+    </div>
+
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">크루 이름</dt>
+        <dd class="text-gray-900 font-medium"><%= @crew.name %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">한 줄 소개</dt>
+        <dd class="text-gray-900 font-medium"><%= @crew.short_description || '-' %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">활동 지역</dt>
+        <dd class="text-gray-900 font-medium"><%= @crew.region || '-' %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">활동 일정</dt>
+        <dd class="text-gray-900 font-medium"><%= @crew.activity_schedule || '-' %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">활동 장소</dt>
+        <dd class="text-gray-900 font-medium"><%= @crew.activity_location || '-' %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-400 font-bold uppercase mb-1">초대 코드</dt>
+        <dd class="text-gray-900 font-mono font-bold"><%= @crew.code %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%# 연락처 목록 %>
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+    <h2 class="text-xl font-black text-gray-900 mb-6">연락처</h2>
+    <% if @contact_points.any? %>
+      <div class="space-y-3">
+        <% @contact_points.each do |cp| %>
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div class="flex items-center gap-3">
+              <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full"><%= cp.platform_display_name %></span>
+              <span class="font-medium text-gray-900"><%= cp.label %></span>
+            </div>
+            <a href="<%= cp.url %>" target="_blank" class="text-xs text-indigo-600 hover:underline truncate max-w-[200px]"><%= cp.url %></a>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-sm">아직 등록된 연락처가 없습니다. 수정 페이지에서 추가해주세요.</p>
+    <% end %>
+  </div>
+</div>

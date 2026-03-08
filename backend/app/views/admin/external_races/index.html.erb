@@ -1,0 +1,57 @@
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "외부 대회 관리",
+      description: "크롤링으로 수집된 외부 대회 정보를 관리합니다." %>
+
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">대회명</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">날짜</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">장소</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">소스</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">상태</th>
+          <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">액션</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @external_races.each do |race| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <p class="font-bold text-gray-900"><%= race.title %></p>
+              <% if race.distances.any? %>
+                <p class="text-xs text-gray-400"><%= race.distances.join(", ") %></p>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= race.date_display %></td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= race.location || '-' %></td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg"><%= race.source_name %></span>
+            </td>
+            <td class="px-6 py-4">
+              <% status_colors = { "active" => "bg-green-100 text-green-700", "cancelled" => "bg-red-100 text-red-700", "completed" => "bg-gray-100 text-gray-600" } %>
+              <span class="px-2 py-1 text-xs font-bold rounded-full <%= status_colors[race.status] %>">
+                <%= { "active" => "진행 예정", "cancelled" => "취소", "completed" => "완료" }[race.status] %>
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to "수정", edit_admin_external_race_path(race), class: "px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200" %>
+                <%= link_to "삭제", admin_external_race_path(race), method: :delete,
+                    class: "px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-lg hover:bg-red-200",
+                    data: { turbo_method: :delete, turbo_confirm: "정말 삭제하시겠습니까?" } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @external_races.empty? %>
+      <div class="py-16 text-center text-gray-500">
+        <p>수집된 외부 대회가 없습니다.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

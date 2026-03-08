@@ -1,0 +1,86 @@
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "커뮤니티 관리",
+      description: "커뮤니티 승인, 추천 설정 및 관리" %>
+
+  <%# 상태 필터 탭 %>
+  <div class="flex gap-2 mb-8">
+    <%= link_to "전체", admin_communities_path, class: "px-4 py-2 rounded-lg font-bold text-sm #{params[:status].blank? ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors" %>
+    <%= link_to "검토 대기", admin_communities_path(status: :pending_review), class: "px-4 py-2 rounded-lg font-bold text-sm #{params[:status] == 'pending_review' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors" %>
+    <%= link_to "공개", admin_communities_path(status: :published), class: "px-4 py-2 rounded-lg font-bold text-sm #{params[:status] == 'published' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors" %>
+    <%= link_to "정지", admin_communities_path(status: :suspended), class: "px-4 py-2 rounded-lg font-bold text-sm #{params[:status] == 'suspended' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors" %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">크루</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">리더</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">지역</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">상태</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">연락처</th>
+          <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">액션</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @crews.each do |crew| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <% if crew.logo.attached? %>
+                  <%= image_tag crew.logo, class: "w-10 h-10 rounded-xl object-cover" %>
+                <% else %>
+                  <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-black text-sm"><%= crew.name[0] %></div>
+                <% end %>
+                <div>
+                  <p class="font-bold text-gray-900"><%= crew.name %></p>
+                  <p class="text-xs text-gray-400"><%= crew.short_description&.truncate(40) %></p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= crew.leader.display_name %></td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= crew.region || '-' %></td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 text-xs font-bold rounded-full <%= crew.status_badge_color %>">
+                <%= crew.status_display %>
+              </span>
+              <% if crew.featured? %>
+                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-yellow-100 text-yellow-700 ml-1">추천</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= crew.crew_contact_points.count %>개</td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <% if crew.pending_review? %>
+                  <%= link_to "승인", approve_admin_community_path(crew), method: :patch,
+                      class: "px-3 py-1 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700",
+                      data: { turbo_method: :patch, turbo_confirm: "이 커뮤니티를 승인하시겠습니까?" } %>
+                <% end %>
+                <% if crew.published? %>
+                  <%= link_to "정지", suspend_admin_community_path(crew), method: :patch,
+                      class: "px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-lg hover:bg-red-200",
+                      data: { turbo_method: :patch, turbo_confirm: "이 커뮤니티를 정지하시겠습니까?" } %>
+                  <%= link_to crew.featured? ? "추천 해제" : "추천", feature_admin_community_path(crew), method: :patch,
+                      class: "px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-lg hover:bg-yellow-200",
+                      data: { turbo_method: :patch } %>
+                <% end %>
+                <% if crew.suspended? %>
+                  <%= link_to "복원", approve_admin_community_path(crew), method: :patch,
+                      class: "px-3 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-200",
+                      data: { turbo_method: :patch } %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @crews.empty? %>
+      <div class="py-16 text-center text-gray-500">
+        <p>등록된 커뮤니티가 없습니다.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

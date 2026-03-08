@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_15_134348) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_08_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -62,15 +62,55 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_134348) do
     t.index ["user_id"], name: "index_carts_on_user_id"
   end
 
+  create_table "crawl_sources", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "base_url", null: false
+    t.string "crawler_class", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "last_crawled_at"
+    t.integer "crawl_interval_hours", default: 24, null: false
+    t.text "last_error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "crew_contact_points", force: :cascade do |t|
+    t.bigint "crew_id", null: false
+    t.integer "platform", default: 0, null: false
+    t.string "url", null: false
+    t.string "label", null: false
+    t.boolean "primary", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["crew_id", "platform"], name: "index_crew_contact_points_on_crew_id_and_platform"
+    t.index ["crew_id"], name: "index_crew_contact_points_on_crew_id"
+  end
+
   create_table "crews", force: :cascade do |t|
     t.string "code"
     t.datetime "created_at", null: false
     t.text "description"
     t.bigint "leader_id", null: false
     t.string "name"
+    t.string "slug"
+    t.string "short_description"
+    t.string "region"
+    t.integer "founded_year"
+    t.integer "member_count_estimate"
+    t.string "activity_schedule"
+    t.string "activity_location"
+    t.integer "status", default: 0, null: false
+    t.boolean "featured", default: false, null: false
+    t.string "website_url"
+    t.datetime "published_at"
+    t.integer "views_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_crews_on_code"
+    t.index ["featured"], name: "index_crews_on_featured"
     t.index ["leader_id"], name: "index_crews_on_leader_id"
+    t.index ["region"], name: "index_crews_on_region"
+    t.index ["slug"], name: "index_crews_on_slug", unique: true
+    t.index ["status"], name: "index_crews_on_status"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -287,11 +327,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_134348) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "external_races", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.date "race_date", null: false
+    t.date "race_end_date"
+    t.string "location"
+    t.string "source_url", null: false
+    t.string "source_name", null: false
+    t.string "registration_url"
+    t.date "registration_deadline"
+    t.string "distances", default: [], array: true
+    t.string "fee_info"
+    t.string "organizer_name"
+    t.string "image_url"
+    t.integer "status", default: 0, null: false
+    t.datetime "crawled_at"
+    t.jsonb "raw_data", default: {}
+    t.string "content_hash"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["race_date"], name: "index_external_races_on_race_date"
+    t.index ["source_name"], name: "index_external_races_on_source_name"
+    t.index ["source_url"], name: "index_external_races_on_source_url", unique: true
+    t.index ["status"], name: "index_external_races_on_status"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users"
+  add_foreign_key "crew_contact_points", "crews"
   add_foreign_key "crews", "users", column: "leader_id"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"

@@ -1,0 +1,66 @@
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <% content_for :header_actions do %>
+    <%= link_to new_admin_crawl_source_path, class: "px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors text-sm" do %>
+      소스 추가
+    <% end %>
+  <% end %>
+
+  <%= render 'shared/page_header',
+      title: "크롤링 소스 관리",
+      description: "외부 대회 정보를 수집하는 크롤링 소스를 관리합니다." %>
+
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">이름</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">크롤러</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">상태</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">마지막 수집</th>
+          <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">주기</th>
+          <th class="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">액션</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @crawl_sources.each do |source| %>
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <p class="font-bold text-gray-900"><%= source.name %></p>
+              <p class="text-xs text-gray-400"><%= source.base_url %></p>
+            </td>
+            <td class="px-6 py-4 text-sm font-mono text-gray-600"><%= source.crawler_class %></td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 text-xs font-bold rounded-full <%= source.enabled? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' %>">
+                <%= source.enabled? ? '활성' : '비활성' %>
+              </span>
+              <% if source.last_error.present? %>
+                <span class="px-2 py-1 text-xs font-bold rounded-full bg-red-100 text-red-600 ml-1" title="<%= source.last_error %>">에러</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">
+              <%= source.last_crawled_at ? time_ago_in_words(source.last_crawled_at) + ' 전' : '없음' %>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600"><%= source.crawl_interval_hours %>시간</td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <%= link_to "수동 실행", trigger_crawl_admin_crawl_source_path(source), method: :post,
+                    class: "px-3 py-1 bg-blue-100 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-200",
+                    data: { turbo_method: :post } %>
+                <%= link_to "수정", edit_admin_crawl_source_path(source), class: "px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200" %>
+                <%= link_to "삭제", admin_crawl_source_path(source), method: :delete,
+                    class: "px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-lg hover:bg-red-200",
+                    data: { turbo_method: :delete, turbo_confirm: "정말 삭제하시겠습니까?" } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @crawl_sources.empty? %>
+      <div class="py-16 text-center text-gray-500">
+        <p>등록된 크롤링 소스가 없습니다.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

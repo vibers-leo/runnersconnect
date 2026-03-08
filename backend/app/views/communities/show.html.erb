@@ -1,0 +1,193 @@
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <%# 히어로 섹션 %>
+  <div class="relative rounded-[2rem] overflow-hidden mb-12 shadow-2xl shadow-gray-200">
+    <div class="aspect-[3/1] bg-gradient-to-br from-indigo-600 to-purple-700">
+      <% if @crew.cover_image.attached? %>
+        <%= image_tag @crew.cover_image, class: "w-full h-full object-cover" %>
+      <% end %>
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+      <div class="flex items-end gap-6">
+        <% if @crew.logo.attached? %>
+          <%= image_tag @crew.logo, class: "w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover border-4 border-white shadow-xl" %>
+        <% else %>
+          <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-white text-3xl font-black border-4 border-white/30">
+            <%= @crew.name[0] %>
+          </div>
+        <% end %>
+
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-2">
+            <h1 class="text-3xl md:text-4xl font-black text-white"><%= @crew.name %></h1>
+            <% if @crew.featured? %>
+              <span class="bg-yellow-400 text-yellow-900 font-black px-3 py-1 rounded-lg text-xs uppercase tracking-wider">추천</span>
+            <% end %>
+          </div>
+          <% if @crew.short_description.present? %>
+            <p class="text-white/80 text-lg font-medium"><%= @crew.short_description %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-12">
+    <%# 메인 콘텐츠 %>
+    <div class="lg:col-span-2 space-y-10">
+      <%# 크루 소개 %>
+      <section>
+        <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center">
+          <span class="w-2 h-8 bg-indigo-600 rounded-full mr-4"></span>
+          크루 소개
+        </h2>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+          <div class="prose prose-lg max-w-none text-gray-700">
+            <%= simple_format(@crew.description) %>
+          </div>
+        </div>
+      </section>
+
+      <%# 활동 사진 %>
+      <% if @crew.activity_photos.any? %>
+        <section>
+          <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center">
+            <span class="w-2 h-8 bg-green-600 rounded-full mr-4"></span>
+            활동 사진
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <% @crew.activity_photos.each do |photo| %>
+              <div class="aspect-square rounded-2xl overflow-hidden bg-gray-100">
+                <%= image_tag photo, class: "w-full h-full object-cover hover:scale-105 transition-transform" %>
+              </div>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <%# 최근 활동 %>
+      <section>
+        <h2 class="text-2xl font-black text-gray-900 mb-6 flex items-center">
+          <span class="w-2 h-8 bg-blue-600 rounded-full mr-4"></span>
+          최근 활동
+        </h2>
+        <% if @recent_activities.any? %>
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden divide-y divide-gray-100">
+            <% @recent_activities.each do |reg| %>
+              <div class="p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-4">
+                  <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <span class="text-white font-black text-xs">RUN</span>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-gray-900"><%= reg.race_edition&.race&.title %></h4>
+                    <p class="text-xs text-gray-400">
+                      <%= reg.user.display_name %> · <%= time_ago_in_words(reg.created_at) %> 전
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="bg-gray-50 rounded-2xl p-12 text-center border border-dashed border-gray-200">
+            <p class="text-gray-500">아직 활동 기록이 없습니다</p>
+          </div>
+        <% end %>
+      </section>
+    </div>
+
+    <%# 사이드바 %>
+    <div class="space-y-8">
+      <%# 크루 정보 %>
+      <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h3 class="font-black text-gray-900 text-lg mb-4">크루 정보</h3>
+        <dl class="space-y-4">
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-gray-500">리더</dt>
+            <dd class="font-bold text-gray-900 text-sm"><%= @crew.leader.display_name %></dd>
+          </div>
+          <% if @crew.region.present? %>
+            <div class="flex items-center justify-between">
+              <dt class="text-sm text-gray-500">활동 지역</dt>
+              <dd class="font-bold text-gray-900 text-sm"><%= @crew.region %></dd>
+            </div>
+          <% end %>
+          <% if @crew.activity_location.present? %>
+            <div class="flex items-center justify-between">
+              <dt class="text-sm text-gray-500">활동 장소</dt>
+              <dd class="font-bold text-gray-900 text-sm"><%= @crew.activity_location %></dd>
+            </div>
+          <% end %>
+          <% if @crew.activity_schedule.present? %>
+            <div class="flex items-center justify-between">
+              <dt class="text-sm text-gray-500">활동 일정</dt>
+              <dd class="font-bold text-gray-900 text-sm"><%= @crew.activity_schedule %></dd>
+            </div>
+          <% end %>
+          <% if @crew.founded_year.present? %>
+            <div class="flex items-center justify-between">
+              <dt class="text-sm text-gray-500">설립 연도</dt>
+              <dd class="font-bold text-gray-900 text-sm"><%= @crew.founded_year %>년</dd>
+            </div>
+          <% end %>
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-gray-500">멤버</dt>
+            <dd class="font-bold text-gray-900 text-sm"><%= @members.count %>명</dd>
+          </div>
+        </dl>
+      </section>
+
+      <%# 연락처 / 외부 링크 %>
+      <% if @crew.crew_contact_points.any? %>
+        <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h3 class="font-black text-gray-900 text-lg mb-4">연락처</h3>
+          <div class="space-y-3">
+            <% @crew.crew_contact_points.each do |cp| %>
+              <a href="<%= cp.url %>" target="_blank" rel="noopener noreferrer"
+                 class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r <%= cp.platform_color %> text-white font-bold text-sm hover:opacity-90 transition-opacity">
+                <span class="truncate"><%= cp.label %></span>
+                <svg class="w-4 h-4 flex-shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <%# 크루 랭킹 %>
+      <section class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
+        <h3 class="font-black text-lg mb-2">크루 랭킹</h3>
+        <p class="text-xs text-gray-400 mb-4">누적 거리 기준 TOP 멤버</p>
+        <div class="space-y-3">
+          <% medal = ["🥇", "🥈", "🥉"] %>
+          <% @top_members.each_with_index do |member, i| %>
+            <div class="flex items-center justify-between bg-white/10 p-3 rounded-xl">
+              <div class="flex items-center space-x-3">
+                <span class="text-lg"><%= medal[i] %></span>
+                <span class="font-bold text-sm"><%= member.display_name %></span>
+              </div>
+              <span class="text-xs font-mono text-gray-300"><%= number_with_precision(member.total_distance, precision: 1) %> km</span>
+            </div>
+          <% end %>
+          <% if @top_members.empty? %>
+            <p class="text-sm text-gray-500 py-4 text-center">아직 기록이 없습니다</p>
+          <% end %>
+        </div>
+      </section>
+
+      <%# 초대 코드 %>
+      <section class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+        <p class="text-xs text-gray-400 font-black uppercase tracking-widest mb-3">초대 코드</p>
+        <p class="text-2xl font-black text-gray-900 tracking-widest font-mono mb-3 select-all"><%= @crew.code %></p>
+        <p class="text-xs text-gray-500">대회 참가 신청 시 이 코드를 입력하면 크루원으로 등록됩니다.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <%= link_to "← 커뮤니티 목록", communities_path, class: "text-sm text-gray-400 hover:text-gray-600 font-bold" %>
+  </div>
+</div>

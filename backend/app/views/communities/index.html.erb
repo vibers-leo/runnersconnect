@@ -1,0 +1,63 @@
+<div class="max-w-6xl mx-auto px-6 py-16">
+  <%= render 'shared/page_header',
+      title: "러닝 커뮤니티",
+      icon: "🏃‍♂️",
+      description: "전국의 러닝 크루를 만나보세요. 함께 달리면 더 즐겁습니다." %>
+
+  <%# 추천 커뮤니티 %>
+  <% if @featured_crews&.any? %>
+    <div class="mb-12">
+      <h2 class="text-xl font-black text-gray-900 mb-6 flex items-center">
+        <span class="w-2 h-6 bg-indigo-600 rounded-full mr-3"></span>
+        추천 커뮤니티
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <% @featured_crews.each do |crew| %>
+          <%= render 'communities/crew_card', crew: crew, featured: true %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 필터 & 검색 %>
+  <div class="flex flex-col md:flex-row gap-4 mb-8">
+    <%= form_tag communities_path, method: :get, class: "flex flex-col md:flex-row gap-4 w-full" do %>
+      <div class="flex-1">
+        <input type="text" name="q" value="<%= params[:q] %>"
+               placeholder="크루 이름으로 검색..."
+               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+      </div>
+      <select name="region" class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
+        <option value="">전체 지역</option>
+        <% @regions.each do |region| %>
+          <option value="<%= region %>" <%= 'selected' if params[:region] == region %>><%= region %></option>
+        <% end %>
+      </select>
+      <select name="sort" class="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm bg-white">
+        <option value="recent" <%= 'selected' if params[:sort] == 'recent' %>>최신순</option>
+        <option value="popular" <%= 'selected' if params[:sort] == 'popular' %>>인기순</option>
+        <option value="featured" <%= 'selected' if params[:sort] == 'featured' %>>추천</option>
+      </select>
+      <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors text-sm">
+        검색
+      </button>
+    <% end %>
+  </div>
+
+  <%# 커뮤니티 목록 %>
+  <% if @crews.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% @crews.each do |crew| %>
+        <%= render 'communities/crew_card', crew: crew, featured: false %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="py-24 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+      <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-gray-200 border border-gray-100">
+        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">검색 결과가 없습니다</h3>
+      <p class="text-gray-500 text-sm">다른 검색어나 지역을 시도해보세요.</p>
+    </div>
+  <% end %>
+</div>
