@@ -1,8 +1,15 @@
 production:
+  # 대회 정보 크롤링 — 6시간마다 (오전 6시, 정오, 오후 6시, 자정)
   crawl_races:
     class: CrawlAllSourcesJob
-    schedule: "0 6 * * *"  # 매일 오전 6시 (KST)
+    schedule: "0 */6 * * *"
 
+  # 지난 대회 상태 자동 완료 처리 — 매일 오전 1시
   mark_completed_races:
     class: MarkCompletedRacesJob
-    schedule: "0 1 * * *"  # 매일 오전 1시 (KST)
+    schedule: "0 1 * * *"
+
+  # 크루 통계 자동 갱신 — 매일 오전 3시
+  update_crew_stats:
+    class: UpdateCrewStatsJob
+    schedule: "0 3 * * *"

@@ -1,8 +1,84 @@
-<div class="max-w-6xl mx-auto px-6 py-16">
+<div class="max-w-7xl mx-auto px-6 py-10">
   <%= render 'shared/page_header',
-      title: "외부 대회 관리",
-      description: "크롤링으로 수집된 외부 대회 정보를 관리합니다." %>
+      title: "외부 대회 수집 현황",
+      description: "크롤링으로 수집된 러닝 대회 정보를 확인하고 관리합니다." %>
 
+  <%# 통계 카드 %>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">전체 수집 대회</p>
+      <p class="text-3xl font-black text-gray-900"><%= @stats[:total] %></p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">예정 대회</p>
+      <p class="text-3xl font-black text-indigo-600"><%= @stats[:upcoming] %></p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">마지막 수집</p>
+      <p class="text-sm font-bold text-gray-700">
+        <%= @stats[:last_crawled] ? time_ago_in_words(@stats[:last_crawled]) + " 전" : "없음" %>
+      </p>
+    </div>
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">활성 소스</p>
+      <p class="text-3xl font-black text-green-600"><%= @sources.enabled.count %></p>
+    </div>
+  </div>
+
+  <%# 크롤 소스 상태 %>
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 mb-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-bold text-gray-700">크롤링 소스 상태</h3>
+      <%= link_to "소스 관리", admin_crawl_sources_path, class: "text-xs text-indigo-600 hover:text-indigo-700 font-bold" %>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <% @sources.each do |source| %>
+        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-gray-800"><%= source.name %></p>
+            <p class="text-xs text-gray-400">
+              <%= source.last_crawled_at ? "#{time_ago_in_words(source.last_crawled_at)} 전 수집" : "미수집" %>
+            </p>
+            <% if source.last_error.present? %>
+              <p class="text-xs text-red-500 mt-0.5 truncate" title="<%= source.last_error %>">
+                오류: <%= source.last_error.truncate(35) %>
+              </p>
+            <% end %>
+          </div>
+          <div class="flex flex-col items-end gap-1 ml-2">
+            <span class="px-2 py-0.5 text-xs font-bold rounded-full whitespace-nowrap <%= source.enabled? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %>">
+              <%= source.enabled? ? '활성' : '비활성' %>
+            </span>
+            <%= link_to "수동 실행", trigger_crawl_admin_crawl_source_path(source),
+                class: "text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap",
+                data: { turbo_method: :post } %>
+          </div>
+        </div>
+      <% end %>
+      <% if @sources.empty? %>
+        <p class="text-sm text-gray-400 col-span-3">
+          등록된 크롤링 소스가 없습니다.
+          <%= link_to "소스 추가하기", new_admin_crawl_source_path, class: "text-indigo-600 font-bold" %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 검색 / 필터 %>
+  <%= form_with url: admin_external_races_path, method: :get, class: "flex flex-wrap gap-3 mb-5" do |f| %>
+    <%= f.text_field :q, value: params[:q], placeholder: "대회명 검색…",
+        class: "flex-1 min-w-48 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <%= f.select :source,
+        options_for_select([["전체 소스", ""]] + @stats[:by_source].keys.map { |s| [s, s] }, params[:source]),
+        {}, class: "px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" %>
+    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+      <%= f.check_box :show_past, { checked: params[:show_past] == "1" }, "1", "0" %>
+      지난 대회 포함
+    </label>
+    <%= f.submit "검색", class: "px-5 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 cursor-pointer" %>
+  <% end %>
+
+  <%# 대회 목록 %>
   <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
     <table class="w-full">
       <thead class="bg-gray-50 border-b border-gray-200">
@@ -19,26 +95,29 @@
         <% @external_races.each do |race| %>
           <tr class="hover:bg-gray-50 transition-colors">
             <td class="px-6 py-4">
-              <p class="font-bold text-gray-900"><%= race.title %></p>
+              <p class="font-bold text-gray-900">
+                <%= link_to race.title, race.source_url, target: "_blank",
+                    class: "hover:text-indigo-600 transition-colors" %>
+              </p>
               <% if race.distances.any? %>
-                <p class="text-xs text-gray-400"><%= race.distances.join(", ") %></p>
+                <p class="text-xs text-gray-400 mt-0.5"><%= race.distances.join(" · ") %></p>
               <% end %>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-600"><%= race.date_display %></td>
+            <td class="px-6 py-4 text-sm text-gray-700 font-medium whitespace-nowrap"><%= race.date_display %></td>
             <td class="px-6 py-4 text-sm text-gray-600"><%= race.location || '-' %></td>
             <td class="px-6 py-4">
-              <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg"><%= race.source_name %></span>
+              <span class="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg"><%= race.source_name %></span>
             </td>
             <td class="px-6 py-4">
-              <% status_colors = { "active" => "bg-green-100 text-green-700", "cancelled" => "bg-red-100 text-red-700", "completed" => "bg-gray-100 text-gray-600" } %>
-              <span class="px-2 py-1 text-xs font-bold rounded-full <%= status_colors[race.status] %>">
-                <%= { "active" => "진행 예정", "cancelled" => "취소", "completed" => "완료" }[race.status] %>
-              </span>
+              <% status_map = { "active" => ["진행 예정", "bg-green-100 text-green-700"], "cancelled" => ["취소", "bg-red-100 text-red-700"], "completed" => ["완료", "bg-gray-100 text-gray-600"] } %>
+              <% label, color = status_map[race.status] %>
+              <span class="px-2 py-1 text-xs font-bold rounded-full <%= color %>"><%= label %></span>
             </td>
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
-                <%= link_to "수정", edit_admin_external_race_path(race), class: "px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200" %>
-                <%= link_to "삭제", admin_external_race_path(race), method: :delete,
+                <%= link_to "수정", edit_admin_external_race_path(race),
+                    class: "px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200" %>
+                <%= link_to "삭제", admin_external_race_path(race),
                     class: "px-3 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-lg hover:bg-red-200",
                     data: { turbo_method: :delete, turbo_confirm: "정말 삭제하시겠습니까?" } %>
               </div>
@@ -49,8 +128,9 @@
     </table>
 
     <% if @external_races.empty? %>
-      <div class="py-16 text-center text-gray-500">
-        <p>수집된 외부 대회가 없습니다.</p>
+      <div class="py-16 text-center">
+        <p class="text-gray-500 mb-2">수집된 대회가 없습니다.</p>
+        <p class="text-sm text-gray-400">크롤링 소스를 등록하고 수동 실행하거나 스케줄을 기다려주세요.</p>
       </div>
     <% end %>
   </div>

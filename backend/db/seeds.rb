@@ -525,6 +525,53 @@ blossom_settlement = Settlement.create!(
 blossom_settlement.calculate!
 puts "  ✓ Blossom Running settlement created (#{blossom_settlement.organizer_payout}원)"
 
+puts "\n🕷️ Creating crawl sources..."
+
+crawl_sources = [
+  {
+    name: "마라톤온라인",
+    base_url: "http://marathon.pe.kr",
+    crawler_class: "Crawlers::MarathonPeKrCrawler",
+    enabled: true,
+    crawl_interval_hours: 6
+  },
+  {
+    name: "대한육상연맹",
+    base_url: "https://www.athletics.or.kr",
+    crawler_class: "Crawlers::AthleticsOrKrCrawler",
+    enabled: true,
+    crawl_interval_hours: 12
+  },
+  {
+    name: "Runpia",
+    base_url: "https://runpia.co.kr",
+    crawler_class: "Crawlers::RunpiaCrawler",
+    enabled: true,
+    crawl_interval_hours: 6
+  },
+  {
+    name: "스포츠포털",
+    base_url: "https://www.sportal.or.kr",
+    crawler_class: "Crawlers::SportalKoreaCrawler",
+    enabled: true,
+    crawl_interval_hours: 12
+  },
+  {
+    name: "네이버카페-크루모집",
+    base_url: "https://openapi.naver.com",
+    crawler_class: "Crawlers::NaverRunningCrewCrawler",
+    enabled: false,  # NAVER_CLIENT_ID/SECRET 환경변수 설정 후 활성화
+    crawl_interval_hours: 24
+  }
+]
+
+crawl_sources.each do |attrs|
+  source = CrawlSource.find_or_initialize_by(crawler_class: attrs[:crawler_class])
+  source.assign_attributes(attrs)
+  source.save!
+  puts "  ✓ #{attrs[:name]} (#{attrs[:enabled] ? '활성' : '비활성'})"
+end
+
 puts "\n✅ Seed data created successfully!"
 puts "\n📊 Summary:"
 puts "  - Users: #{User.count} (#{User.where(role: 'admin').count} admin, #{User.where(role: 'organizer').count} organizers, #{User.where(role: 'user').count} participants)"

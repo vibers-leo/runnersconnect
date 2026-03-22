@@ -4,8 +4,19 @@ class Admin::ExternalRacesController < ApplicationController
   before_action :set_race, only: [:edit, :update, :destroy]
 
   def index
-    @external_races = ExternalRace.order(race_date: :desc)
+    @external_races = ExternalRace.order(race_date: :asc)
+    @external_races = @external_races.upcoming unless params[:show_past] == "1"
     @external_races = @external_races.from_source(params[:source]) if params[:source].present?
+    @external_races = @external_races.search_by_title(params[:q]) if params[:q].present?
+
+    # 통계
+    @stats = {
+      total: ExternalRace.count,
+      upcoming: ExternalRace.upcoming.count,
+      by_source: ExternalRace.group(:source_name).count,
+      last_crawled: CrawlSource.maximum(:last_crawled_at)
+    }
+    @sources = CrawlSource.order(:name)
   end
 
   def edit
