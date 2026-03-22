@@ -1,27 +1,51 @@
 services:
-  db:
-    image: postgres:15
+  runnersconnect-db:
+    image: postgres:16-alpine
+    container_name: runnersconnect-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: runnersconnect_production
+      POSTGRES_USER: ${POSTGRES_USER:-runnersconnect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: postgres
-      POSTGRES_DB: backend_development
-    ports:
-      - "5432:5432"
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-runnersconnect} -d runnersconnect_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  web:
-    build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
-    volumes:
-      - .:/rails
+  runnersconnect-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: runnersconnect-api
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "4010:8000"
     environment:
-      RAILS_ENV: development
-      DATABASE_URL: postgres://postgres:password@db:5432/backend_development
+      RAILS_ENV: production
+      PORT: 8000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-runnersconnect}:${POSTGRES_PASSWORD}@runnersconnect-db:5432/runnersconnect_production
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      RAILS_LOG_LEVEL: info
+      RAILS_MAX_THREADS: 5
+      WEB_CONCURRENCY: 2
     depends_on:
-      - db
+      runnersconnect-db:
+        condition: service_healthy
+    networks:
+      - internal
+      - npm_default
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge
+  npm_default:
+    external: true
