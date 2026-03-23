@@ -24,7 +24,7 @@ services:
     container_name: runnersconnect-api
     restart: unless-stopped
     ports:
-      - "4010:8000"
+      - "4070:8000"
     environment:
       RAILS_ENV: production
       PORT: 8000
