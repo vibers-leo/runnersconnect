@@ -57,12 +57,13 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
-  # Testing
-  gem "rspec-rails", "~> 7.0"
-  gem "factory_bot_rails"
-  gem "faker"
-  gem "shoulda-matchers"
 end
+
+# Testing (Gemfile.lock과 별도 관리 — 로컬에서 bundle install 후 사용)
+# gem "rspec-rails", "~> 7.0"
+# gem "factory_bot_rails"
+# gem "faker"
+# gem "shoulda-matchers"
 
 gem "jsonapi-serializer", "~> 2.2"
 
