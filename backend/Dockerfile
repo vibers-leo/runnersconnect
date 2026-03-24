@@ -36,7 +36,8 @@ RUN apt-get update -qq && \
 
 # Gem 설치
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN bundle config set frozen false && \
+    bundle install && \
     rm -rf ~/.bundle/ \
            "${BUNDLE_PATH}"/ruby/*/cache \
            "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
