@@ -10,18 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.NCP_SSH_KEY }}
+
       - name: Deploy to NCP server
-        env:
-          SSH_KEY: ${{ secrets.NCP_SSH_KEY }}
-          HOST: ${{ secrets.NCP_HOST }}
-          USER: ${{ secrets.NCP_USER }}
         run: |
-          echo "$SSH_KEY" > /tmp/deploy_key
-          chmod 600 /tmp/deploy_key
-          ssh -i /tmp/deploy_key \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=10 \
-            -p 22 \
-            $USER@$HOST \
-            "cd /root/projects/runnersconnect/backend && git pull origin main && docker compose build --no-cache && docker compose up -d && docker compose ps"
-          rm -f /tmp/deploy_key
+          ssh -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} \
+            "cd /root/projects/runnersconnect/backend && \
+             git pull origin main && \
+             docker compose build --no-cache && \
+             docker compose up -d && \
+             docker compose ps"
