@@ -4,6 +4,9 @@
 
 **Runner's Connect**는 축제/행사 기획사를 위한 B2B 대회 운영 관리 플랫폼입니다.
 
+## 상위 브랜드
+계발자들 (Vibers) — vibers.co.kr / server.vibers.co.kr
+
 ### 핵심 비즈니스 모델
 - 주최자들에게 대회 백오피스 제공 (SaaS)
 - 관리자가 Claude와 함께 맞춤형 대회 홈페이지 제작
@@ -430,6 +433,36 @@ DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:drop db:create db:migrate db:s
 - **Authentication**: Devise
 - **Image Processing**: ImageMagick, MiniMagick
 
+## 프로젝트 구조
+```
+runnersconnect/
+├── backend/                  ← Rails 서버
+│   ├── app/
+│   │   ├── controllers/
+│   │   │   ├── admin/        ← 관리자 (대시보드, 대회, 정산, 커뮤니티)
+│   │   │   ├── organizer/    ← 주최자 (대회관리, 상품, 기록, 정산)
+│   │   │   ├── api/v1/       ← JSON API (모바일앱)
+│   │   │   └── dashboard/    ← 크루 리더 대시보드
+│   │   ├── models/           ← 34개 모델
+│   │   ├── views/            ← ERB 템플릿
+│   │   ├── serializers/      ← API 시리얼라이저
+│   │   ├── assets/stylesheets/
+│   │   │   ├── application.tailwind.css
+│   │   │   └── shadcn.css    ← shadcn-ui 컬러 토큰
+│   │   └── components/ui/    ← UI 컴포넌트
+│   ├── config/
+│   │   ├── routes.rb         ← Web + API 이중 라우팅
+│   │   └── database.yml
+│   ├── db/migrate/           ← 15+ 마이그레이션
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── CLAUDE.md             ← 이 파일
+│   └── OKR.md
+├── .github/workflows/
+│   └── deploy.yml            ← NCP 배포
+└── docs/                     ← 문서
+```
+
 ---
 
 ## OKR 기반 개발 원칙
@@ -582,3 +615,56 @@ end
 - **OKR.md**: 현재 분기 목표 및 핵심 결과
 
 문의 사항이 있으면 이 문서를 참고하고, 불명확한 부분은 기존 코드의 패턴을 따르세요.
+
+---
+
+## NCP 서버 정보
+- **IP**: 49.50.138.93
+- **SSH**: ssh root@49.50.138.93
+- **프로젝트 경로**: /root/projects/runnersconnect/
+- **Docker 네트워크**: npm_default
+
+## 포트맵
+| 포트 | 컨테이너명 | 도메인 |
+|------|-----------|--------|
+| 4070 | runnersconnect-api | runnersconnect.vibers.co.kr |
+
+## Docker Compose 규칙
+- 컨테이너명: runnersconnect-api, runnersconnect-db
+- DB: postgres:16-alpine
+- 네트워크: npm_default (external: true) + internal
+- restart: unless-stopped
+- 환경변수: .env 파일로 관리
+
+## 배포 방식
+- `.github/workflows/deploy.yml` (GitHub Actions)
+- `git push origin main` → SSH → Docker Compose 재빌드
+- GitHub Secrets: NCP_HOST, NCP_USER, NCP_SSH_KEY
+
+## SSL 절대 규칙
+- Cloudflare Full Mode (주황구름 ON)
+- NPM에서 Let's Encrypt 발급하지 마!
+- NPM에서는 HTTP 프록시만 설정
+- server, *.server 만 DNS Only (회색구름)
+
+## 멀티 에이전트 협업 체계
+
+| 태그 | 환경 | 역할 |
+|------|------|------|
+| [AG] | AntiGravity (VS Code 익스텐션) | 코딩 메인. LEO가 직접 지시 |
+| [CC] | Claude Code (VS Code) | 단일 앱 작업 |
+| [TCC] | Claude Code (터미널 / iTerm2) | 병렬 작업 |
+| [APP] | Claude Code (앱, 클라우드) | 보조 작업 |
+| [CW] | Claude Cowork (데스크톱) | 비코딩 (서버 관리, 문서) |
+
+## 디자인 특징
+- Primary: Indigo-600 (bg-indigo-600, hover:bg-indigo-700)
+- shadcn-ui 컬러 시스템 (CSS 변수 기반)
+- 레이싱 시맨틱 컬러 (live, upcoming, closed)
+→ 상세 내용은 DESIGN_GUIDE.md 참조
+
+## 현재 작업 (NOW)
+<!-- 작업 중단 시 여기에 기록 — 다음 에이전트가 이어받을 수 있도록 -->
+- 진행 중: 없음
+- 마지막 완료: NCP Docker 배포 완료 (2026-03-24)
+- 다음 할 일: OKR.md의 KR 기준으로 우선순위 높은 것부터

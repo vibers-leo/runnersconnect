@@ -32,11 +32,9 @@ module Api
           end
         end
 
-        registration.status = 'paid' # Force paid for testing
-        registration.merchant_uid = "TEST_#{Time.now.to_i}_#{SecureRandom.hex(4)}"
-        registration.payment_method = 'test_skip'
+        registration.status = 'pending'
+        registration.merchant_uid = "#{Time.now.to_i}_#{SecureRandom.hex(4)}"
         registration.payment_amount = edition.price
-        registration.paid_at = Time.current
         
         # Save Snapshot of Address
         registration.shipping_address_snapshot = {
@@ -47,9 +45,8 @@ module Api
 
         if registration.save
           render json: {
-            status: 200,
             message: 'Registration created successfully.',
-            data: registration
+            data: RegistrationSerializer.new(registration).serializable_hash
           }, status: :created
         else
           render json: { error: registration.errors.full_messages }, status: :unprocessable_entity
@@ -60,14 +57,8 @@ module Api
       # List my registrations
       def index
         registrations = current_user.registrations.includes(race_edition: :race).order(created_at: :desc)
-        
-        render json: {
-          data: registrations.as_json(include: {
-            race_edition: {
-              include: :race
-            }
-          })
-        }
+
+        render json: RegistrationSerializer.new(registrations, include: [:race_edition]).serializable_hash
       end
 
       private
