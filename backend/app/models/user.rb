@@ -5,8 +5,9 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [:kakao],
-         :jwt_authenticatable, jwt_revocation_strategy: self
+         :omniauthable, :jwt_authenticatable,
+         omniauth_providers: [:kakao],
+         jwt_revocation_strategy: self
 
   # Associations
   has_many :registrations
