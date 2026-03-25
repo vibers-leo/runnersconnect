@@ -51,3 +51,13 @@ frontend/yarn-error.log*
 .DS_Store
 *.swp
 *.swo
+
+# macOS 리소스 포크 메타데이터
+._*
+.DS_Store
+**/.DS_Store
+
+# Claude Code 메모리/세션
+.claude/
+.claude-context/
+session-logs/
