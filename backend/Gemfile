@@ -69,6 +69,10 @@ gem "jsonapi-serializer", "~> 2.2"
 
 gem "devise-jwt", "~> 0.13.0"
 
+# 카카오 소셜 로그인
+gem "omniauth-oauth2", "~> 1.8"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+
 gem "propshaft", "~> 1.3"
 
 gem "foreman", "~> 0.90.0", group: :development

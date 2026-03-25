@@ -276,6 +276,12 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
+  config.omniauth :kakao,
+                  ENV['KAKAO_CLIENT_ID'],
+                  ENV['KAKAO_CLIENT_SECRET'],
+                  scope: 'profile_nickname,profile_image,account_email',
+                  provider_ignores_state: true
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.

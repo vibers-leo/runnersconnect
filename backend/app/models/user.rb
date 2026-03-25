@@ -5,6 +5,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:kakao],
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   # Associations
@@ -47,6 +48,15 @@ class User < ApplicationRecord
   def avatar_url
     return nil unless avatar.attached?
     Rails.application.routes.url_helpers.rails_blob_url(avatar, only_path: true)
+  end
+
+  # 카카오 소셜 로그인
+  def self.from_omniauth(auth)
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.email = auth.info.email.presence || "#{auth.provider}_#{auth.uid}@placeholder.runnersconnect.com"
+      user.password = Devise.friendly_token[0, 20]
+      user.name = auth.info.nickname.presence || auth.info.name || '러너'
+    end
   end
 
   # Cart helper

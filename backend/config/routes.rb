@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Web Authentication
-  devise_for :users
+  devise_for :users, controllers: {
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
 
   # API Authentication routes (Manual mapping to preserve existing API endpoints)
   namespace :api do

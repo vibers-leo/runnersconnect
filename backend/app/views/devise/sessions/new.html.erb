@@ -34,6 +34,19 @@
         </div>
       <% end %>
 
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div>
+          <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">또는</span></div>
+        </div>
+        <div class="mt-4">
+          <%= button_to user_kakao_omniauth_authorize_path, method: :post, class: "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-900 hover:opacity-90 transition", style: "background-color: #FEE500;", data: { turbo: false } do %>
+            <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 3C5.58 3 2 5.8 2 9.2c0 2.17 1.44 4.08 3.6 5.16l-.92 3.44c-.08.29.25.53.5.36l4.12-2.72c.23.02.46.04.7.04 4.42 0 8-2.8 8-6.28S14.42 3 10 3z" fill="#3C1E1E"/></svg>
+            카카오로 로그인
+          <% end %>
+        </div>
+      </div>
+
       <div class="mt-8 text-center pt-8 border-t border-gray-50">
         <p class="text-sm text-gray-400 font-bold mb-4">아직 계정이 없으신가요?</p>
         <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
