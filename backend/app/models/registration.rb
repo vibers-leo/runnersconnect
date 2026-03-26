@@ -52,6 +52,26 @@ class Registration < ApplicationRecord
     )
   end
 
+  # 상태 전환 메서드
+  def pay!(payment_method: nil, paid_at: nil)
+    raise "결제 대기 상태에서만 결제할 수 있습니다." unless pending?
+    update!(status: 'paid', payment_method: payment_method, paid_at: paid_at || Time.current)
+  end
+
+  def cancel!
+    raise "취소할 수 없는 상태입니다." unless pending? || paid?
+    update!(status: 'cancelled')
+  end
+
+  def refund!
+    raise "환불할 수 없는 상태입니다." unless paid?
+    update!(status: 'refunded')
+  end
+
+  def status_label
+    { 'pending' => '결제 대기', 'paid' => '결제 완료', 'cancelled' => '취소', 'refunded' => '환불' }[status]
+  end
+
   private
 
   def generate_qr_token

@@ -44,4 +44,34 @@ class Settlement < ApplicationRecord
   def can_mark_paid?
     approved?
   end
+
+  # 상태 전환 메서드
+  def request_payout!
+    raise "정산 요청이 불가능합니다." unless can_request?
+    update!(status: 'confirmed', requested_at: Time.current)
+    NotificationService.notify_settlement_update(self)
+  end
+
+  def approve!
+    raise "승인할 수 없는 상태입니다." unless can_approve?
+    update!(status: 'approved', approved_at: Time.current)
+    NotificationService.notify_settlement_update(self)
+  end
+
+  def mark_paid!
+    raise "지급 처리할 수 없는 상태입니다." unless can_mark_paid?
+    update!(status: 'paid', paid_at: Time.current)
+    NotificationService.notify_settlement_update(self)
+  end
+
+  def reject!(reason = nil)
+    raise "거부할 수 없는 상태입니다." unless pending? || confirmed?
+    update!(status: 'rejected', rejected_at: Time.current, rejection_reason: reason)
+    NotificationService.notify_settlement_update(self)
+  end
+
+  def status_label
+    { 'pending' => '정산 대기', 'confirmed' => '정산 요청됨', 'approved' => '승인 완료',
+      'paid' => '지급 완료', 'rejected' => '거부됨' }[status]
+  end
 end
