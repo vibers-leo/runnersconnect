@@ -1,17 +1,10 @@
 class ApplicationController < ActionController::Base
   include TurboNativeApp
+  include ErrorHandler
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   layout :set_app_layout
-
-  rescue_from ActiveRecord::RecordNotFound do |e|
-    render json: { error: e.message }, status: :not_found
-  end
-
-  rescue_from ActionController::ParameterMissing do |e|
-    render json: { error: e.message }, status: :bad_request
-  end
 
   private
 
