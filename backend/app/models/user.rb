@@ -6,7 +6,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :omniauthable, :jwt_authenticatable,
-         omniauth_providers: [:kakao],
+         omniauth_providers: [:kakao, :google_oauth2, :naver],
          jwt_revocation_strategy: self
 
   # Associations
