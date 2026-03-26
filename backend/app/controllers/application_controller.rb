@@ -1,5 +1,9 @@
 class ApplicationController < ActionController::Base
+  include TurboNativeApp
+
   before_action :configure_permitted_parameters, if: :devise_controller?
+
+  layout :set_app_layout
 
   rescue_from ActiveRecord::RecordNotFound do |e|
     render json: { error: e.message }, status: :not_found
@@ -7,6 +11,12 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActionController::ParameterMissing do |e|
     render json: { error: e.message }, status: :bad_request
+  end
+
+  private
+
+  def set_app_layout
+    turbo_native_app? ? "mobile" : "application"
   end
 
   protected

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Runner's Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="turbo-native" content="true">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= yield :head %>
+
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "shadcn", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <style>
+    /* 네이티브 앱에서는 세이프 에리어 처리 */
+    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+    /* 네이티브 앱에서 터치 최적화 */
+    * { -webkit-tap-highlight-color: transparent; }
+    a, button { min-height: 44px; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen font-sans antialiased">
+  <main class="min-h-screen">
+    <% if notice %>
+      <div class="px-4 py-3 bg-green-50 text-green-700 text-sm"><%= notice %></div>
+    <% end %>
+    <% if alert %>
+      <div class="px-4 py-3 bg-red-50 text-red-700 text-sm"><%= alert %></div>
+    <% end %>
+    <%= yield %>
+  </main>
+</body>
+</html>
