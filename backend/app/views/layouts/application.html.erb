@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
   <head>
-    <title>Runner's Connect</title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} | Runner's Connect" : "Runner's Connect - 러닝 대회 운영 플랫폼" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "러닝 대회 접수부터 기록 관리, 정산까지. 주최자를 위한 올인원 대회 운영 플랫폼." %>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Runner's Connect">
+    <meta property="og:title" content="<%= content_for?(:title) ? yield(:title) : "Runner's Connect" %>">
+    <meta property="og:description" content="러닝 대회 접수부터 기록 관리, 정산까지">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <link rel="canonical" href="<%= request.original_url %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
