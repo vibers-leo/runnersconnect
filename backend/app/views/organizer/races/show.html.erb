@@ -1,0 +1,130 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-black text-gray-900"><%= @race.title %></h1>
+      <div class="flex items-center space-x-4 text-sm text-gray-500 font-medium mt-2">
+        <span><%= @race.location %></span>
+        <span>&bull;</span>
+        <span><%= @race.start_at&.strftime("%Y년 %m월 %d일") %></span>
+      </div>
+    </div>
+    <%= link_to "← 대회 목록", organizer_races_path, class: "text-sm font-bold text-gray-600 hover:text-gray-900" %>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- 메인 정보 -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- 대회 정보 카드 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <h2 class="text-xl font-black text-gray-900 mb-6">대회 정보</h2>
+        <dl class="space-y-4">
+          <div>
+            <dt class="text-sm font-bold text-gray-500 mb-1">대회 설명</dt>
+            <dd class="text-gray-900"><%= @race.description || "설명 없음" %></dd>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <dt class="text-sm font-bold text-gray-500 mb-1">총 참가자</dt>
+              <dd class="text-gray-900 font-black text-lg"><%= @total_participants %>명</dd>
+            </div>
+            <div>
+              <dt class="text-sm font-bold text-gray-500 mb-1">종목 수</dt>
+              <dd class="text-gray-900 font-black text-lg"><%= @race_editions.count %>개</dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+
+      <!-- 종목 목록 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <h2 class="text-xl font-black text-gray-900 mb-6">등록 종목</h2>
+        <div class="space-y-4">
+          <% @race_editions.each do |edition| %>
+            <div class="bg-gray-50 rounded-2xl p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-black text-gray-900"><%= edition.name %></h3>
+                <span class="text-sm font-mono text-gray-500"><%= edition.distance %> km</span>
+              </div>
+              <div class="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p class="text-gray-500 font-bold mb-1">참가비</p>
+                  <p class="text-gray-900 font-black"><%= number_to_currency(edition.price, unit: '₩', precision: 0) %></p>
+                </div>
+                <div>
+                  <p class="text-gray-500 font-bold mb-1">정원</p>
+                  <p class="text-gray-900 font-black"><%= edition.capacity %>명</p>
+                </div>
+                <div>
+                  <p class="text-gray-500 font-bold mb-1">현재 신청</p>
+                  <p class="text-gray-900 font-black"><%= edition.registrations.where(status: 'paid').count %>명</p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사이드바 -->
+    <div class="space-y-6">
+      <!-- 상태 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <h3 class="text-sm font-black text-gray-500 uppercase tracking-wider mb-4">상태</h3>
+        <% status_class = case @race.status
+          when 'draft' then 'bg-gray-100 text-gray-600'
+          when 'open' then 'bg-green-100 text-green-600'
+          when 'closed' then 'bg-red-100 text-red-600'
+          when 'finished' then 'bg-blue-100 text-blue-600'
+          end %>
+        <span class="inline-block px-4 py-2 <%= status_class %> rounded-full text-sm font-black">
+          <%= case @race.status
+              when 'draft' then '준비중'
+              when 'open' then '접수중'
+              when 'closed' then '접수마감'
+              when 'finished' then '종료'
+              end %>
+        </span>
+      </div>
+
+      <!-- 일정 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <h3 class="text-sm font-black text-gray-500 uppercase tracking-wider mb-4">일정</h3>
+        <dl class="space-y-3 text-sm">
+          <div>
+            <dt class="text-gray-500 font-bold mb-1">대회 개최일</dt>
+            <dd class="text-gray-900 font-black"><%= @race.start_at&.strftime("%Y년 %m월 %d일 %H:%M") %></dd>
+          </div>
+          <div>
+            <dt class="text-gray-500 font-bold mb-1">접수 기간</dt>
+            <dd class="text-gray-900">
+              <% if @race.registration_start_at && @race.registration_end_at %>
+                <%= @race.registration_start_at.strftime("%m/%d %H:%M") %><br>
+                ~ <%= @race.registration_end_at.strftime("%m/%d %H:%M") %>
+              <% else %>
+                미설정
+              <% end %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- 빠른 메뉴 -->
+      <div class="bg-gray-50 rounded-2xl border border-gray-200 p-6 space-y-3">
+        <h3 class="text-sm font-black text-gray-600 uppercase tracking-wider mb-3">빠른 메뉴</h3>
+        <%= link_to organizer_race_participants_path(@race), class: "block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-lg transition-colors border border-gray-200 text-center" do %>
+          참가자 관리
+        <% end %>
+        <%= link_to organizer_race_records_path(@race), class: "block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-lg transition-colors border border-gray-200 text-center" do %>
+          기록 관리
+        <% end %>
+        <%= link_to organizer_race_products_path(@race), class: "block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-lg transition-colors border border-gray-200 text-center" do %>
+          상품 관리
+        <% end %>
+        <%= link_to organizer_race_record_statistics_path(@race), class: "block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-900 font-bold rounded-lg transition-colors border border-gray-200 text-center" do %>
+          기록 통계
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

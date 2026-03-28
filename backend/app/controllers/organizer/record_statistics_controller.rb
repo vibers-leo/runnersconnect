@@ -15,14 +15,18 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
       records = edition.records.order(net_time: :asc)
       participants = edition.registrations.where(status: 'paid').count
 
+      # net_time이 String("HH:MM:SS") 형식이므로 초 단위로 변환하여 계산
+      time_seconds = records.map { |r| time_to_seconds(r.net_time) }
+      avg_seconds = time_seconds.any? ? (time_seconds.sum / time_seconds.size).to_i : 0
+
       {
         edition: edition,
         participants: participants,
         finishers: records.count,
         completion_rate: participants > 0 ? (records.count.to_f / participants * 100).round(1) : 0,
-        avg_time: records.any? ? records.average(:net_time).to_i : 0,
-        fastest_time: records.first&.net_time || 0,
-        slowest_time: records.last&.net_time || 0
+        avg_time: avg_seconds,
+        fastest_time: records.first&.net_time || '-',
+        slowest_time: records.last&.net_time || '-'
       }
     end
 
@@ -32,7 +36,7 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
     # 연령대 통계
     @age_group_stats = calculate_age_group_stats
 
-    # 시간대별 완주자 분포 (차트용)
+    # 시간대별 완주자 분포 (차트용, net_time String 변환 적용)
     @time_distribution = calculate_time_distribution
 
     # 상위 완주자 (user, race_edition preload)
@@ -56,6 +60,17 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
     redirect_to organizer_root_path, alert: '접근 권한이 없습니다.'
   end
 
+  # 시간 문자열("HH:MM:SS" 또는 "MM:SS")을 초 단위로 변환
+  def time_to_seconds(time_str)
+    return 0 unless time_str.present?
+    parts = time_str.to_s.split(':').map(&:to_f)
+    case parts.length
+    when 3 then parts[0] * 3600 + parts[1] * 60 + parts[2]
+    when 2 then parts[0] * 60 + parts[1]
+    else parts[0]
+    end
+  end
+
   def calculate_gender_stats
     stats = {}
 
@@ -64,10 +79,13 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
                      .where(race_editions: { race_id: @race.id })
                      .where(users: { gender: gender })
 
+      time_seconds = records.pluck(:net_time).map { |t| time_to_seconds(t) }
+      avg_seconds = time_seconds.any? ? (time_seconds.sum / time_seconds.size).to_i : 0
+
       stats[gender] = {
         count: records.count,
-        avg_time: records.any? ? records.average(:net_time).to_i : 0,
-        fastest_time: records.minimum(:net_time) || 0
+        avg_time: avg_seconds,
+        fastest_time: records.order(net_time: :asc).first&.net_time || '-'
       }
     end
 
@@ -83,10 +101,13 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
                      .where(race_editions: { race_id: @race.id })
                      .where(users: { age_group: age_group })
 
+      time_seconds = records.pluck(:net_time).map { |t| time_to_seconds(t) }
+      avg_seconds = time_seconds.any? ? (time_seconds.sum / time_seconds.size).to_i : 0
+
       stats[age_group] = {
         count: records.count,
-        avg_time: records.any? ? records.average(:net_time).to_i : 0,
-        fastest_time: records.minimum(:net_time) || 0
+        avg_time: avg_seconds,
+        fastest_time: records.order(net_time: :asc).first&.net_time || '-'
       }
     end
 
@@ -94,12 +115,13 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
   end
 
   def calculate_time_distribution
-    # 10분 단위로 그룹화
+    # 10분 단위로 그룹화 (net_time String을 초로 변환 후 분 단위 계산)
     distribution = {}
 
     @race.race_editions.each do |edition|
       edition.records.each do |record|
-        time_minutes = (record.net_time / 60.0).floor
+        seconds = time_to_seconds(record.net_time)
+        time_minutes = (seconds / 60.0).floor
         bucket = (time_minutes / 10) * 10  # 10분 단위로 반올림
 
         key = "#{bucket}-#{bucket + 10}분"
@@ -108,6 +130,6 @@ class Organizer::RecordStatisticsController < Organizer::BaseController
       end
     end
 
-    distribution.sort_by { |k, v| k.split('-').first.to_i }.to_h
+    distribution.sort_by { |k, _v| k.split('-').first.to_i }.to_h
   end
 end

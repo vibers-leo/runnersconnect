@@ -1,0 +1,167 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-black text-gray-900">정산 상세 내역</h1>
+      <p class="text-gray-500 font-medium mt-2"><%= @settlement.race.title %></p>
+    </div>
+    <%= link_to "← 정산 내역", organizer_settlements_path, class: "text-sm font-bold text-gray-600 hover:text-gray-900" %>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- 메인 정산 정보 -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- 정산 금액 카드 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <h2 class="text-xl font-black text-gray-900 mb-6">정산 금액</h2>
+
+        <div class="space-y-4">
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <span class="text-gray-600 font-medium">총 매출</span>
+            <span class="text-lg font-black text-gray-900">
+              <%= number_to_currency(@settlement.total_revenue, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <span class="text-gray-600 font-medium">참가자 수</span>
+            <span class="text-lg font-black text-gray-900"><%= @settlement.registration_count %>명</span>
+          </div>
+
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <span class="text-red-600 font-medium">플랫폼 수수료</span>
+            <span class="text-lg font-bold text-red-600">
+              - <%= number_to_currency(@settlement.platform_commission, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between py-4 bg-indigo-50 rounded-xl px-4 -mx-4">
+            <span class="text-indigo-900 font-black text-lg">정산 금액</span>
+            <span class="text-2xl font-black text-indigo-600">
+              <%= number_to_currency(@settlement.organizer_payout, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 수수료 상세 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <h2 class="text-xl font-black text-gray-900 mb-6">수수료 상세</h2>
+
+        <div class="bg-gray-50 rounded-xl p-6 space-y-3 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">매출 기반 수수료 (5%)</span>
+            <span class="font-bold text-gray-900">
+              <%= number_to_currency((@settlement.total_revenue * 0.05).to_i, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-600">건당 수수료 (<%= @settlement.registration_count %>건 x ₩500)</span>
+            <span class="font-bold text-gray-900">
+              <%= number_to_currency(@settlement.registration_count * 500, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-gray-200">
+            <span class="text-gray-900 font-bold">총 수수료</span>
+            <span class="font-black text-red-600">
+              <%= number_to_currency(@settlement.platform_commission, unit: '₩', precision: 0, delimiter: ',') %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사이드바 -->
+    <div class="space-y-6">
+      <!-- 상태 카드 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <h3 class="text-sm font-black text-gray-500 uppercase tracking-wider mb-4">정산 상태</h3>
+        <span class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold
+          <%= case @settlement.status
+              when 'pending' then 'bg-gray-100 text-gray-800'
+              when 'confirmed' then 'bg-yellow-100 text-yellow-800'
+              when 'approved' then 'bg-blue-100 text-blue-800'
+              when 'paid' then 'bg-green-100 text-green-800'
+              when 'rejected' then 'bg-red-100 text-red-800'
+              end %>">
+          <%= @settlement.status_label %>
+        </span>
+      </div>
+
+      <!-- 일정 정보 -->
+      <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <h3 class="text-sm font-black text-gray-500 uppercase tracking-wider mb-4">처리 이력</h3>
+        <dl class="space-y-3 text-sm">
+          <div>
+            <dt class="text-gray-500 font-bold mb-1">생성일</dt>
+            <dd class="text-gray-900 font-medium"><%= @settlement.created_at.strftime('%Y년 %m월 %d일') %></dd>
+          </div>
+          <% if @settlement.requested_at.present? %>
+            <div>
+              <dt class="text-gray-500 font-bold mb-1">요청일</dt>
+              <dd class="text-gray-900 font-medium"><%= @settlement.requested_at.strftime('%Y년 %m월 %d일') %></dd>
+            </div>
+          <% end %>
+          <% if @settlement.approved_at.present? %>
+            <div>
+              <dt class="text-gray-500 font-bold mb-1">승인일</dt>
+              <dd class="text-gray-900 font-medium"><%= @settlement.approved_at.strftime('%Y년 %m월 %d일') %></dd>
+            </div>
+          <% end %>
+          <% if @settlement.paid_at.present? %>
+            <div>
+              <dt class="text-gray-500 font-bold mb-1">지급일</dt>
+              <dd class="text-gray-900 font-medium"><%= @settlement.paid_at.strftime('%Y년 %m월 %d일') %></dd>
+            </div>
+          <% end %>
+          <% if @settlement.rejected_at.present? %>
+            <div>
+              <dt class="text-gray-500 font-bold mb-1">거부일</dt>
+              <dd class="text-red-600 font-medium"><%= @settlement.rejected_at.strftime('%Y년 %m월 %d일') %></dd>
+            </div>
+            <% if @settlement.rejection_reason.present? %>
+              <div>
+                <dt class="text-gray-500 font-bold mb-1">거부 사유</dt>
+                <dd class="text-red-600 font-medium"><%= @settlement.rejection_reason %></dd>
+              </div>
+            <% end %>
+          <% end %>
+        </dl>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="bg-gray-50 rounded-2xl border border-gray-200 p-6 space-y-3">
+        <h3 class="text-sm font-black text-gray-600 uppercase tracking-wider mb-3">액션</h3>
+        <% if @settlement.can_request? %>
+          <%= button_to '정산 요청', request_payout_organizer_settlement_path(@settlement),
+              method: :post,
+              class: 'block w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors text-center',
+              data: { confirm: '정산을 요청하시겠습니까? 최신 금액으로 재계산됩니다.' } %>
+        <% elsif @settlement.confirmed? || @settlement.approved? %>
+          <div class="px-4 py-3 bg-yellow-50 text-yellow-800 font-bold rounded-lg text-center border border-yellow-200">
+            처리 중입니다
+          </div>
+        <% elsif @settlement.paid? %>
+          <div class="px-4 py-3 bg-green-50 text-green-800 font-bold rounded-lg text-center border border-green-200">
+            지급 완료
+          </div>
+        <% end %>
+
+        <%= link_to organizer_settlements_path, class: "block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg transition-colors border border-gray-200 text-center" do %>
+          목록으로 돌아가기
+        <% end %>
+      </div>
+
+      <!-- 입금 계좌 정보 -->
+      <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+        <h3 class="text-sm font-black text-blue-900 mb-3">입금 계좌</h3>
+        <p class="text-blue-800 font-medium text-sm">
+          <%= current_organizer_profile.bank_name %> <%= current_organizer_profile.bank_account %>
+        </p>
+        <p class="text-blue-700 text-xs mt-1">
+          예금주: <%= current_organizer_profile.account_holder %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

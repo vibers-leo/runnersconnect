@@ -42,8 +42,8 @@ class OrdersController < ApplicationController
     )
 
     # 배송 정보 미리 채우기
-    @order.shipping_address = current_user.address if current_user.address.present?
-    @order.shipping_phone = current_user.phone if current_user.phone.present?
+    @order.shipping_address = current_user.address_basic if current_user.address_basic.present?
+    @order.shipping_phone = current_user.phone_number if current_user.phone_number.present?
   end
 
   def create

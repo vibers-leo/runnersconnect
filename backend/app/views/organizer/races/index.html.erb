@@ -1,0 +1,80 @@
+<div class="space-y-6">
+  <!-- 페이지 헤더 -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-black text-gray-900">내 대회 관리</h1>
+      <p class="text-gray-500 font-medium mt-2">등록된 대회를 조회하고 관리할 수 있습니다</p>
+    </div>
+  </div>
+
+  <!-- 대회 목록 -->
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-4 text-left text-xs font-black text-gray-600 uppercase tracking-wider">대회명</th>
+            <th class="px-6 py-4 text-left text-xs font-black text-gray-600 uppercase tracking-wider">장소</th>
+            <th class="px-6 py-4 text-left text-xs font-black text-gray-600 uppercase tracking-wider">개최일</th>
+            <th class="px-6 py-4 text-left text-xs font-black text-gray-600 uppercase tracking-wider">상태</th>
+            <th class="px-6 py-4 text-left text-xs font-black text-gray-600 uppercase tracking-wider">접수기간</th>
+            <th class="px-6 py-4 text-right text-xs font-black text-gray-600 uppercase tracking-wider">관리</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <% @races.each do |race| %>
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4">
+                <%= link_to organizer_race_path(race), class: "font-bold text-gray-900 hover:text-indigo-600" do %>
+                  <%= race.title %>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600"><%= race.location %></td>
+              <td class="px-6 py-4 text-sm text-gray-600">
+                <%= race.start_at&.strftime("%Y-%m-%d") %>
+              </td>
+              <td class="px-6 py-4">
+                <% status_class = case race.status
+                  when 'draft' then 'bg-gray-100 text-gray-600'
+                  when 'open' then 'bg-green-100 text-green-600'
+                  when 'closed' then 'bg-red-100 text-red-600'
+                  when 'finished' then 'bg-blue-100 text-blue-600'
+                  end %>
+                <span class="px-3 py-1 <%= status_class %> rounded-full text-xs font-bold">
+                  <%= case race.status
+                      when 'draft' then '준비중'
+                      when 'open' then '접수중'
+                      when 'closed' then '접수마감'
+                      when 'finished' then '종료'
+                      end %>
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600">
+                <% if race.registration_start_at && race.registration_end_at %>
+                  <%= race.registration_start_at.strftime("%m/%d") %> ~ <%= race.registration_end_at.strftime("%m/%d") %>
+                <% else %>
+                  <span class="text-gray-400">미설정</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end space-x-3">
+                  <%= link_to "참가자", organizer_race_participants_path(race), class: "text-sm font-bold text-indigo-600 hover:text-indigo-700" %>
+                  <%= link_to "상세", organizer_race_path(race), class: "text-sm font-bold text-gray-600 hover:text-gray-900" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+      <% if @races.empty? %>
+        <div class="p-12 text-center">
+          <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <p class="text-gray-500 font-medium">등록된 대회가 없습니다</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

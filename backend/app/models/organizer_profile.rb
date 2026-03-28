@@ -13,6 +13,11 @@ class OrganizerProfile < ApplicationRecord
   validates :bank_name, presence: true, if: :settlement_info_required?
   validates :account_holder, presence: true, if: :settlement_info_required?
 
+  # 주최자의 전체 참가자 수 (결제 완료 기준)
+  def total_participants_count
+    races.joins(:registrations).where(registrations: { status: 'paid' }).count
+  end
+
   private
 
   def settlement_info_required?

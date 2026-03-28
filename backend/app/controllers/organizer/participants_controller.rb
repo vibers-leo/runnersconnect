@@ -65,7 +65,7 @@ class Organizer::ParticipantsController < Organizer::BaseController
           reg.user.gender == 'male' ? '남성' : reg.user.gender == 'female' ? '여성' : '',
           reg.user.age_group,
           reg.race_edition.name,
-          reg.user.phone,
+          reg.user.phone_number,
           reg.user.email,
           reg.shipping_address,
           reg.created_at.strftime('%Y-%m-%d %H:%M')
