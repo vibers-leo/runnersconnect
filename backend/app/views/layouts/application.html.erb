@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CGK1BSBM63"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-CGK1BSBM63');
+    </script>
     <title><%= content_for?(:title) ? "#{yield(:title)} | Runner's Connect" : "Runner's Connect - 러닝 대회 운영 플랫폼" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="utf-8">
