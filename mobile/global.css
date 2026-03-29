@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Supanova 디자인 시스템 — RunnersConnect */
+
+  /* 카드: rounded-3xl, p-5, shadow는 인라인 style로 적용 */
+  .card {
+    @apply bg-white rounded-3xl p-5;
+  }
+
+  /* 버튼 — Primary (둥근 pill, 최소 44pt 터치) */
+  .btn-primary {
+    @apply bg-primary rounded-full py-3.5 px-6;
+  }
+
+  .btn-primary-text {
+    @apply text-white font-semibold text-base;
+  }
+
+  /* 버튼 — Outline */
+  .btn-outline {
+    @apply border-2 border-primary rounded-full py-3.5 px-6;
+  }
+
+  .btn-outline-text {
+    @apply text-primary text-base font-semibold;
+  }
+
+  /* 섹션 타이틀 */
+  .section-title {
+    @apply text-heading-2 text-gray-900;
+  }
+
+  /* 대회 카드 */
+  .race-card {
+    @apply bg-white rounded-3xl p-5;
+  }
+
+  /* 기록 뱃지 */
+  .record-badge {
+    @apply bg-primary/10 rounded-full py-1 px-3;
+  }
+
+  .record-badge-text {
+    @apply text-primary text-caption font-bold;
+  }
+
+  /* Eyebrow 라벨 */
+  .eyebrow {
+    @apply text-eyebrow uppercase tracking-[0.15em] font-medium text-gray-400;
+  }
+
+  /* 입력 필드 */
+  .input-field {
+    @apply bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-body text-gray-900;
+  }
+
+  /* 메뉴 아이템 */
+  .menu-item {
+    @apply bg-white rounded-2xl px-5 py-4 flex-row items-center justify-between;
+  }
+}
