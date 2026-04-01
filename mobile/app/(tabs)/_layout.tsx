@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform } from "react-native";
+import * as Haptics from "expo-haptics";
 
 export default function TabsLayout() {
   return (
@@ -9,35 +10,33 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#3B82F6",
         tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: {
-          borderTopWidth: 0,
+          borderTopWidth: 1,
+          borderTopColor: "#f3f4f6",
           backgroundColor: "#FFFFFF",
-          paddingBottom: Platform.OS === "ios" ? 24 : 8,
-          paddingTop: 8,
-          height: Platform.OS === "ios" ? 88 : 64,
-          ...Platform.select({
-            ios: {
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: -4 },
-              shadowOpacity: 0.04,
-              shadowRadius: 12,
-            },
-            android: { elevation: 8 },
-          }),
+          paddingBottom: Platform.OS === "ios" ? 28 : 12,
+          paddingTop: 10,
+          height: Platform.OS === "ios" ? 90 : 70,
         },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "600",
+          letterSpacing: -0.2,
           marginTop: 2,
         },
         headerShown: false,
+      }}
+      screenListeners={{
+        tabPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "홈",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "home" : "home-outline"} size={22} color={color} />
           ),
         }}
       />
@@ -45,8 +44,8 @@ export default function TabsLayout() {
         name="races"
         options={{
           title: "대회",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="trophy-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "trophy" : "trophy-outline"} size={22} color={color} />
           ),
         }}
       />
@@ -54,8 +53,8 @@ export default function TabsLayout() {
         name="records"
         options={{
           title: "기록",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="timer-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "timer" : "timer-outline"} size={22} color={color} />
           ),
         }}
       />
@@ -63,8 +62,8 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "프로필",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "person" : "person-outline"} size={22} color={color} />
           ),
         }}
       />

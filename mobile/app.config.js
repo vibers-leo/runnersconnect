@@ -33,7 +33,7 @@ export default {
     extra: {
       apiUrl: 'https://runnersconnect.vibers.co.kr',
       eas: {
-        projectId: 'EAS_INIT으로_생성',
+        projectId: '01cd1d67-9075-4b2e-8ba6-52357cb0d32e',
       },
     },
   },

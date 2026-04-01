@@ -1,24 +1,38 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable, RefreshControl } from "react-native";
+import { useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import Toast from "react-native-toast-message";
+import { TDS_ELEVATION } from "../../constants/DesignTokens";
 
-/* 카드 shadow */
-const cardShadow = {
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.06,
-  shadowRadius: 12,
-  elevation: 3,
-};
-
-/* 기록 더미 데이터 (빈 상태 테스트용 — 데이터 있으면 여기에 추가) */
 const RECORDS: { id: number; race: string; time: string; distance: string; date: string }[] = [];
 
 export default function RecordsScreen() {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => {
+        setRefreshing(false);
+        Toast.show({ type: 'info', text1: '기록이 업데이트되었습니다' });
+    }, 1000);
+  }, []);
+
+  const handleRecordPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* 헤더 */}
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3B82F6" />
+        }
+      >
         <View className="px-5 pt-4 pb-2">
           <Text className="text-eyebrow uppercase tracking-[0.15em] text-gray-400 mb-1">
             MY RECORDS
@@ -30,7 +44,7 @@ export default function RecordsScreen() {
 
         {/* 기록 요약 카드 */}
         <View className="px-5 mt-4 mb-4">
-          <View className="card bg-primary" style={cardShadow}>
+          <View className="bg-primary rounded-3xl p-6" style={TDS_ELEVATION.card}>
             <View className="flex-row justify-between">
               <View className="items-center flex-1">
                 <Text className="text-eyebrow uppercase tracking-[0.15em] text-white/60 mb-1">
@@ -38,7 +52,7 @@ export default function RecordsScreen() {
                 </Text>
                 <Text className="text-3xl font-bold text-white">{RECORDS.length}</Text>
               </View>
-              <View className="w-px bg-white/20" />
+              <View className="w-px bg-white/20 h-10 self-center" />
               <View className="items-center flex-1">
                 <Text className="text-eyebrow uppercase tracking-[0.15em] text-white/60 mb-1">
                   베스트
@@ -52,9 +66,8 @@ export default function RecordsScreen() {
         </View>
 
         {RECORDS.length === 0 ? (
-          /* 빈 상태 */
           <View className="px-5 mt-4">
-            <View className="card items-center py-16" style={cardShadow}>
+            <View className="bg-white rounded-3xl items-center py-16 px-6" style={TDS_ELEVATION.card}>
               <Text className="text-5xl mb-4">⏱</Text>
               <Text className="text-heading-3 text-gray-900 mb-2">
                 아직 기록이 없습니다
@@ -65,14 +78,17 @@ export default function RecordsScreen() {
             </View>
           </View>
         ) : (
-          /* 기록 리스트 */
           <View className="px-5">
-            <Text className="text-eyebrow uppercase tracking-[0.15em] text-gray-400 mb-3">
+            <Text className="text-eyebrow uppercase tracking-[0.15em] text-gray-400 mb-3 ml-1">
               RACE HISTORY
             </Text>
             {RECORDS.map((record) => (
-              <View key={record.id} className="card mb-3 flex-row items-center" style={cardShadow}>
-                {/* 기록 숫자 크게 */}
+              <Pressable
+                key={record.id}
+                onPress={handleRecordPress}
+                className="bg-white rounded-3xl p-5 mb-3 flex-row items-center"
+                style={TDS_ELEVATION.card}
+              >
                 <View className="mr-4">
                   <Text className="text-2xl font-bold tracking-tight text-primary">
                     {record.time}
@@ -81,7 +97,6 @@ export default function RecordsScreen() {
                     {record.distance}
                   </Text>
                 </View>
-                {/* 대회명 + 날짜 */}
                 <View className="flex-1">
                   <Text className="text-body font-semibold text-gray-900">
                     {record.race}
@@ -92,7 +107,7 @@ export default function RecordsScreen() {
                   </View>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
-              </View>
+              </Pressable>
             ))}
           </View>
         )}
