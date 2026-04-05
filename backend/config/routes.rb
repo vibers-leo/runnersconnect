@@ -168,4 +168,10 @@ Rails.application.routes.draw do
   get "terms", to: "pages#terms"
 
   root "home#index"
+
+  # Vibers 통합 어드민 (기존 api 네임스페이스 밖에 독립적으로 추가)
+  namespace :api do
+    get  "vibers_admin",           to: "vibers_admin#index"
+    get  "vibers_admin/resource",  to: "vibers_admin#resource"
+  end
 end
