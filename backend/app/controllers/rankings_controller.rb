@@ -1,8 +1,11 @@
 class RankingsController < ApplicationController
+  before_action :authenticate_user!
+
   def index
     users = User.where("total_distance > 0")
                 .order(total_distance: :desc)
                 .limit(20)
+                .includes(records: :race_edition)
 
     @rankings = users.map do |user|
       {
@@ -17,10 +20,10 @@ class RankingsController < ApplicationController
   private
 
   def calculate_average_pace(user)
-    records = user.records.joins(:race_edition)
-                  .where("race_editions.distance > 0")
-                  .where.not(net_time: nil)
-                  .pluck("records.net_time", "race_editions.distance")
+    # includes로 미리 로드된 연관관계 사용 (N+1 방지)
+    records = user.records
+                  .select { |r| r.race_edition&.distance.to_f > 0 && r.net_time.present? }
+                  .map { |r| [r.net_time, r.race_edition.distance] }
 
     return "N/A" if records.empty?
 
