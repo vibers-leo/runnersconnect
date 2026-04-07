@@ -338,7 +338,7 @@ Devise.setup do |config|
   # config.sign_in_after_change_password = true
 
   config.jwt do |jwt|
-    jwt.secret = ENV.fetch('DEVISE_JWT_SECRET_KEY')
+    jwt.secret = ENV['DEVISE_JWT_SECRET_KEY'] || (Rails.env.production? ? raise("DEVISE_JWT_SECRET_KEY 환경변수가 설정되지 않았습니다") : 'dummy-secret-for-build-only')
     jwt.dispatch_requests = [
       ['POST', %r{^/api/v1/auth/login$}],
       ['POST', %r{^/api/v1/auth/signup$}]
