@@ -21,6 +21,5 @@ jobs:
             "cd /root/projects/runnersconnect/backend && \
              git checkout -- . && \
              git pull origin main && \
-             docker compose build --no-cache && \
-             docker compose up -d && \
+             docker compose up -d --build --no-deps && \
              docker compose ps"
