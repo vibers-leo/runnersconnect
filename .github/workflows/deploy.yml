@@ -19,6 +19,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }} \
             "cd /root/projects/runnersconnect/backend && \
+             git checkout -- . && \
              git pull origin main && \
              docker compose build --no-cache && \
              docker compose up -d && \
