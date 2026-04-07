@@ -11,7 +11,8 @@ gem "devise"
 gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
-gem "tailwindcss-rails", "~> 3.3"
+# tailwindcss-rails 제거 — 빌드 바이너리 크래시 이슈로 CSS 직접 커밋 방식으로 전환
+# gem "tailwindcss-rails"
 
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
