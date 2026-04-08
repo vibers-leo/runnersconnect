@@ -1,1 +1,61 @@
+@import url('https://cdn.jsdelivr.net/gh/Freesentation/paperlogy@main/Paperlogy.css');
+@import url('https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@400;500;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css');
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #0a0a0a;
+  --color-primary-hover: #111111;
+  --color-accent: #e8ff2a;
+  --color-accent-glow: rgba(232, 255, 42, 0.25);
+  --color-text-main: #ffffff;
+  --color-text-secondary: #888888;
+  --color-text-tertiary: #555555;
+  --color-bg-main: #0a0a0a;
+  --color-bg-surface: #111111;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --font-sans: 'Gmarket Sans', 'Paperlogy', 'Pretendard', -apple-system, sans-serif;
+}
+
+:root {
+  --primary: #0a0a0a;
+  --primary-hover: #111111;
+  --accent: #e8ff2a;
+  --accent-glow: rgba(232, 255, 42, 0.25);
+  --text-main: #ffffff;
+  --text-secondary: #888888;
+  --text-tertiary: #555555;
+  --bg-main: #0a0a0a;
+  --bg-surface: #111111;
+  --border: rgba(255, 255, 255, 0.1);
+  --radius: 8px;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-black text-white;
+  font-family: 'Gmarket Sans', 'Paperlology', 'Pretendard', -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Gmarket Sans', 'Paperlology', -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* BOLD_DARK Utilities */
+.btn-accent {
+  @apply bg-yellow-300 text-black font-bold hover:shadow-lg hover:shadow-yellow-300/50 transition-all;
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.card-dark {
+  @apply bg-gray-900 border border-gray-800 rounded-lg;
+}
