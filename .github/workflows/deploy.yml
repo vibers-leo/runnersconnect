@@ -22,4 +22,8 @@ jobs:
              git checkout -- . && \
              git pull origin main && \
              docker compose up -d --build --no-deps && \
-             docker compose ps"
+             sleep 15 && \
+             docker compose exec -T runnersconnect-api bin/rails db:migrate 2>/dev/null; \
+             sleep 10 && \
+             curl -sf http://localhost:4070/up && echo '✅ RunnersConnect 배포 완료' || echo '⚠️ 헬스체크 실패' && \
+             docker exec npm-app-1 nginx -s reload || true"
