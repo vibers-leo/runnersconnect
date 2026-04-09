@@ -59,3 +59,10 @@ h1, h2, h3, h4, h5, h6 {
 .card-dark {
   @apply bg-gray-900 border border-gray-800 rounded-lg;
 }
+
+.nav-link {
+  color: var(--text-secondary);
+}
+.nav-link:hover {
+  color: var(--text-main);
+}

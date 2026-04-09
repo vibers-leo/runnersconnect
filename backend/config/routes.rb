@@ -29,7 +29,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :status, only: [:index]
-      resources :races, only: [:index, :show]
+      resources :races, only: [:index, :show] do
+        member do
+          get :results
+        end
+      end
       resources :registrations, only: [:create, :index], controller: 'race_registrations'
       resource :profile, only: [:show, :update]
 
