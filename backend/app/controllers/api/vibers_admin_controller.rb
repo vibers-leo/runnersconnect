@@ -7,7 +7,7 @@ class Api::VibersAdminController < ApplicationController
   def index
     stats = {
       totalUsers: User.count,
-      contentCount: Race.count,
+      contentCount: (Crew.count rescue 0),
       mau: 0,
       recentSignups: User.where("created_at > ?", 7.days.ago).count,
       totalOrders: Order.count
