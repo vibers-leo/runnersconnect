@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'runnersconnect.vibers.co.kr',
+      },
+    ],
+  },
   // Rails API 프록시
   async rewrites() {
     return [

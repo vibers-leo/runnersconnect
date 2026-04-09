@@ -4,31 +4,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0a0a0a;
-  --color-primary-hover: #111111;
-  --color-accent: #e8ff2a;
-  --color-accent-glow: rgba(232, 255, 42, 0.25);
-  --color-text-main: #ffffff;
-  --color-text-secondary: #888888;
-  --color-text-tertiary: #555555;
-  --color-bg-main: #0a0a0a;
-  --color-bg-surface: #111111;
-  --color-border: rgba(255, 255, 255, 0.1);
+  --color-primary: #ffffff;
+  --color-accent: #f04e23;
+  --color-text-main: #0f0f0f;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #999999;
+  --color-bg-main: #f7f6f3;
+  --color-bg-surface: #ffffff;
+  --color-border: rgba(0, 0, 0, 0.08);
   --font-sans: 'Gmarket Sans', 'Paperlogy', 'Pretendard', -apple-system, sans-serif;
 }
 
 :root {
-  --primary: #0a0a0a;
-  --primary-hover: #111111;
-  --accent: #e8ff2a;
-  --accent-glow: rgba(232, 255, 42, 0.25);
-  --text-main: #ffffff;
-  --text-secondary: #888888;
-  --text-tertiary: #555555;
-  --bg-main: #0a0a0a;
-  --bg-surface: #111111;
-  --border: rgba(255, 255, 255, 0.1);
-  --radius: 8px;
+  --accent: #f04e23;
+  --accent-glow: rgba(240, 78, 35, 0.2);
+  --text-main: #0f0f0f;
+  --text-secondary: #555555;
+  --text-tertiary: #999999;
+  --bg-main: #f7f6f3;
+  --bg-surface: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --radius: 12px;
 }
 
 html {
@@ -37,32 +33,38 @@ html {
 }
 
 body {
-  @apply bg-black text-white;
-  font-family: 'Gmarket Sans', 'Paperlology', 'Pretendard', -apple-system, sans-serif;
+  font-family: 'Gmarket Sans', 'Pretendard', -apple-system, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Gmarket Sans', 'Paperlology', -apple-system, sans-serif;
+  font-family: 'Gmarket Sans', 'Paperlogy', -apple-system, sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
-  text-transform: uppercase;
 }
 
-/* BOLD_DARK Utilities */
 .btn-accent {
-  @apply bg-yellow-300 text-black font-bold hover:shadow-lg hover:shadow-yellow-300/50 transition-all;
-  box-shadow: 0 0 20px var(--accent-glow);
+  background-color: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.2s;
 }
-
-.card-dark {
-  @apply bg-gray-900 border border-gray-800 rounded-lg;
+.btn-accent:hover {
+  background-color: #d93d16;
+  box-shadow: 0 8px 24px rgba(240, 78, 35, 0.3);
 }
 
 .nav-link {
   color: var(--text-secondary);
+  transition: color 0.15s;
 }
 .nav-link:hover {
   color: var(--text-main);
+}
+
+.card-light {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
